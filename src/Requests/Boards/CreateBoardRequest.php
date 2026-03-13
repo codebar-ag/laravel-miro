@@ -13,9 +13,7 @@ class CreateBoardRequest extends Request implements HasBody
 
     protected Method $method = Method::POST;
 
-    public function __construct(protected array $data)
-    {
-    }
+    public function __construct(protected array $data) {}
 
     public function resolveEndpoint(): string
     {

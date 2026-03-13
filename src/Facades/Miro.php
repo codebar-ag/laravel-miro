@@ -2,10 +2,11 @@
 
 namespace CodebarAg\Miro\Facades;
 
+use CodebarAg\Miro\MiroConnector;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \CodebarAg\Miro\MiroConnector
+ * @see MiroConnector
  *
  * @method static \CodebarAg\Miro\Dto\BoardDto[] getBoards(array $params = [])
  * @method static \CodebarAg\Miro\Dto\BoardDto getBoard(string $boardId)
@@ -18,6 +19,6 @@ class Miro extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \CodebarAg\Miro\MiroConnector::class;
+        return MiroConnector::class;
     }
 }
