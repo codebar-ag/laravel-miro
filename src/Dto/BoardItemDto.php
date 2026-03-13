@@ -15,7 +15,8 @@ class BoardItemDto
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
         public readonly ?string $parentId,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(array $data): static
     {

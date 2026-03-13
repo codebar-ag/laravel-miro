@@ -17,7 +17,8 @@ class BoardDto
         public readonly ?string $projectId,
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(array $data): static
     {

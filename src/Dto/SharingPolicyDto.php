@@ -11,7 +11,8 @@ class SharingPolicyDto
         public readonly string $inviteToAccountAndBoardLinkAccess,
         public readonly string $organizationAccess,
         public readonly string $teamAccess,
-    ) {}
+    ) {
+    }
 
     public static function fromResponse(array $data): static
     {
