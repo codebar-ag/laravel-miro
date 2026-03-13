@@ -30,13 +30,13 @@ it('can get boards', function () {
         GetBoardsRequest::class => MockResponse::make([
             'data' => [
                 [
-                    'id'          => 'board_1',
-                    'name'        => 'Test Board',
+                    'id' => 'board_1',
+                    'name' => 'Test Board',
                     'description' => 'A test board',
-                    'type'        => 'board',
-                    'viewLink'    => 'https://miro.com/app/board/board_1/',
-                    'createdAt'   => '2024-01-01T00:00:00Z',
-                    'modifiedAt'  => '2024-01-02T00:00:00Z',
+                    'type' => 'board',
+                    'viewLink' => 'https://miro.com/app/board/board_1/',
+                    'createdAt' => '2024-01-01T00:00:00Z',
+                    'modifiedAt' => '2024-01-02T00:00:00Z',
                 ],
             ],
         ], 200),
@@ -57,16 +57,16 @@ it('can get boards', function () {
 it('can get a specific board', function () {
     $mockClient = new MockClient([
         GetBoardRequest::class => MockResponse::make([
-            'id'          => 'board_1',
-            'name'        => 'Test Board',
+            'id' => 'board_1',
+            'name' => 'Test Board',
             'description' => 'A test board',
-            'type'        => 'board',
-            'viewLink'    => 'https://miro.com/app/board/board_1/',
+            'type' => 'board',
+            'viewLink' => 'https://miro.com/app/board/board_1/',
             'sharingPolicy' => [
-                'access'                            => 'private',
+                'access' => 'private',
                 'inviteToAccountAndBoardLinkAccess' => 'no_access',
-                'organizationAccess'                => 'no_access',
-                'teamAccess'                        => 'no_access',
+                'organizationAccess' => 'no_access',
+                'teamAccess' => 'no_access',
             ],
         ], 200),
     ]);
@@ -85,11 +85,11 @@ it('can get a specific board', function () {
 it('can create a board', function () {
     $mockClient = new MockClient([
         CreateBoardRequest::class => MockResponse::make([
-            'id'          => 'board_new',
-            'name'        => 'New Board',
+            'id' => 'board_new',
+            'name' => 'New Board',
             'description' => null,
-            'type'        => 'board',
-            'viewLink'    => 'https://miro.com/app/board/board_new/',
+            'type' => 'board',
+            'viewLink' => 'https://miro.com/app/board/board_new/',
         ], 201),
     ]);
 
@@ -106,11 +106,11 @@ it('can create a board', function () {
 it('can update a board', function () {
     $mockClient = new MockClient([
         UpdateBoardRequest::class => MockResponse::make([
-            'id'          => 'board_1',
-            'name'        => 'Renamed Board',
+            'id' => 'board_1',
+            'name' => 'Renamed Board',
             'description' => null,
-            'type'        => 'board',
-            'viewLink'    => 'https://miro.com/app/board/board_1/',
+            'type' => 'board',
+            'viewLink' => 'https://miro.com/app/board/board_1/',
         ], 200),
     ]);
 
@@ -141,12 +141,12 @@ it('can get board items', function () {
         GetBoardItemsRequest::class => MockResponse::make([
             'data' => [
                 [
-                    'id'         => 'item_1',
-                    'type'       => 'sticky_note',
-                    'data'       => ['content' => 'Hello Miro!'],
-                    'position'   => ['x' => 0.0, 'y' => 0.0, 'origin' => 'center'],
-                    'geometry'   => ['width' => 199.0, 'height' => 199.0],
-                    'createdAt'  => '2024-01-01T00:00:00Z',
+                    'id' => 'item_1',
+                    'type' => 'sticky_note',
+                    'data' => ['content' => 'Hello Miro!'],
+                    'position' => ['x' => 0.0, 'y' => 0.0, 'origin' => 'center'],
+                    'geometry' => ['width' => 199.0, 'height' => 199.0],
+                    'createdAt' => '2024-01-01T00:00:00Z',
                     'modifiedAt' => '2024-01-01T00:00:00Z',
                 ],
             ],
@@ -167,15 +167,15 @@ it('can get board items', function () {
 
 it('maps board dto fields correctly', function () {
     $board = BoardDto::fromResponse([
-        'id'          => 'board_123',
-        'name'        => 'My Board',
+        'id' => 'board_123',
+        'name' => 'My Board',
         'description' => 'Board description',
-        'type'        => 'board',
-        'viewLink'    => 'https://miro.com/app/board/board_123/',
-        'team'        => ['id' => 'team_1'],
-        'project'     => ['id' => 'project_1'],
-        'createdAt'   => '2024-01-01T00:00:00Z',
-        'modifiedAt'  => '2024-06-01T00:00:00Z',
+        'type' => 'board',
+        'viewLink' => 'https://miro.com/app/board/board_123/',
+        'team' => ['id' => 'team_1'],
+        'project' => ['id' => 'project_1'],
+        'createdAt' => '2024-01-01T00:00:00Z',
+        'modifiedAt' => '2024-06-01T00:00:00Z',
     ]);
 
     expect($board->id)->toBe('board_123')
