@@ -13,15 +13,15 @@ class CreateBoardRequest extends Request implements HasBody
 
     protected Method $method = Method::POST;
 
-    public function __construct(protected array $data)
-    {
-    }
+    /** @param array<string, mixed> $data */
+    public function __construct(protected array $data) {}
 
     public function resolveEndpoint(): string
     {
         return '/v2/boards';
     }
 
+    /** @return array<string, mixed> */
     protected function defaultBody(): array
     {
         return $this->data;

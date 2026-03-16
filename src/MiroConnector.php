@@ -27,6 +27,7 @@ class MiroConnector extends Connector
         return 'https://api.miro.com';
     }
 
+    /** @return array<string, string> */
     protected function defaultHeaders(): array
     {
         return [
@@ -37,7 +38,9 @@ class MiroConnector extends Connector
 
     protected function defaultAuth(): TokenAuthenticator
     {
-        return new TokenAuthenticator(config('miro.access_token'));
+        $token = config('miro.access_token');
+
+        return new TokenAuthenticator(is_string($token) ? $token : '');
     }
 
     /**
@@ -50,10 +53,10 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new GetBoardsRequest($params));
 
-        return array_map(
-            fn (array $board) => BoardDto::fromResponse($board),
-            $response->json('data') ?? []
-        );
+        /** @var array<int, array<string, mixed>> $data */
+        $data = is_array($r = $response->json('data')) ? $r : [];
+
+        return array_map(fn (array $board) => BoardDto::fromResponse($board), $data);
     }
 
     /**
@@ -63,31 +66,31 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new GetBoardRequest($boardId));
 
-        return BoardDto::fromResponse($response->json());
+        return BoardDto::fromResponse((array) $response->json());
     }
 
     /**
      * Create a new board.
      *
-     * @param  array{name?: string, description?: string, teamId?: string, sharingPolicy?: array}  $data
+     * @param  array{name?: string, description?: string, teamId?: string, sharingPolicy?: array<string, mixed>}  $data
      */
     public function createBoard(array $data): BoardDto
     {
         $response = $this->send(new CreateBoardRequest($data));
 
-        return BoardDto::fromResponse($response->json());
+        return BoardDto::fromResponse((array) $response->json());
     }
 
     /**
      * Update an existing board.
      *
-     * @param  array{name?: string, description?: string, sharingPolicy?: array}  $data
+     * @param  array{name?: string, description?: string, sharingPolicy?: array<string, mixed>}  $data
      */
     public function updateBoard(string $boardId, array $data): BoardDto
     {
         $response = $this->send(new UpdateBoardRequest($boardId, $data));
 
-        return BoardDto::fromResponse($response->json());
+        return BoardDto::fromResponse((array) $response->json());
     }
 
     /**
@@ -108,10 +111,10 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new GetBoardItemsRequest($boardId, $params));
 
-        return array_map(
-            fn (array $item) => BoardItemDto::fromResponse($item),
-            $response->json('data') ?? []
-        );
+        /** @var array<int, array<string, mixed>> $data */
+        $data = is_array($r = $response->json('data')) ? $r : [];
+
+        return array_map(fn (array $item) => BoardItemDto::fromResponse($item), $data);
     }
 
     /**
@@ -124,10 +127,10 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new GetStickyNotesRequest($boardId, $params));
 
-        return array_map(
-            fn (array $item) => StickyNoteDto::fromResponse($item),
-            $response->json('data') ?? []
-        );
+        /** @var array<int, array<string, mixed>> $data */
+        $data = is_array($r = $response->json('data')) ? $r : [];
+
+        return array_map(fn (array $item) => StickyNoteDto::fromResponse($item), $data);
     }
 
     /**
@@ -137,7 +140,7 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new GetStickyNoteRequest($boardId, $itemId));
 
-        return StickyNoteDto::fromResponse($response->json());
+        return StickyNoteDto::fromResponse((array) $response->json());
     }
 
     /**
@@ -149,7 +152,7 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new CreateStickyNoteRequest($boardId, $data));
 
-        return StickyNoteDto::fromResponse($response->json());
+        return StickyNoteDto::fromResponse((array) $response->json());
     }
 
     /**
@@ -161,7 +164,7 @@ class MiroConnector extends Connector
     {
         $response = $this->send(new UpdateStickyNoteRequest($boardId, $itemId, $data));
 
-        return StickyNoteDto::fromResponse($response->json());
+        return StickyNoteDto::fromResponse((array) $response->json());
     }
 
     /**

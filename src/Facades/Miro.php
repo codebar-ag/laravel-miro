@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see MiroConnector
  *
- * @method static \CodebarAg\Miro\Dto\BoardDto[] getBoards(array $params = [])
+ * @method static \CodebarAg\Miro\Dto\BoardDto[] getBoards(array<string, mixed> $params = [])
  * @method static \CodebarAg\Miro\Dto\BoardDto getBoard(string $boardId)
- * @method static \CodebarAg\Miro\Dto\BoardDto createBoard(array $data)
- * @method static \CodebarAg\Miro\Dto\BoardDto updateBoard(string $boardId, array $data)
- * @method static void deleteBoard(string $boardId)
- * @method static \CodebarAg\Miro\Dto\BoardItemDto[] getBoardItems(string $boardId, array $params = [])
+ * @method static \CodebarAg\Miro\Dto\BoardDto createBoard(array<string, mixed> $data)
+ * @method static \CodebarAg\Miro\Dto\BoardDto updateBoard(string $boardId, array<string, mixed> $data)
+ * @method static \Saloon\Http\Response deleteBoard(string $boardId)
+ * @method static \CodebarAg\Miro\Dto\BoardItemDto[] getBoardItems(string $boardId, array<string, mixed> $params = [])
  */
 class Miro extends Facade
 {

@@ -9,6 +9,7 @@ class GetBoardStickyNotesRequest extends Request
 {
     protected Method $method = Method::GET;
 
+    /** @param array<string, mixed> $params */
     public function __construct(
         protected string $boardId,
         protected array $params = []
@@ -19,6 +20,7 @@ class GetBoardStickyNotesRequest extends Request
         return '/v2/boards/{board_id}/sticky_notes';
     }
 
+    /** @return array<string, mixed> */
     protected function defaultQuery(): array
     {
         return $this->params;

@@ -9,15 +9,15 @@ class GetBoardsRequest extends Request
 {
     protected Method $method = Method::GET;
 
-    public function __construct(protected array $params = [])
-    {
-    }
+    /** @param array<string, mixed> $params */
+    public function __construct(protected array $params = []) {}
 
     public function resolveEndpoint(): string
     {
         return '/v2/boards';
     }
 
+    /** @return array<string, mixed> */
     protected function defaultQuery(): array
     {
         return $this->params;

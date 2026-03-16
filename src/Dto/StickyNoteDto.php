@@ -23,23 +23,29 @@ class StickyNoteDto
         public readonly ?string $modifiedAt,
     ) {}
 
-    public static function fromResponse(array $data): static
+    /** @param array<string, mixed> $data */
+    public static function fromResponse(array $data): self
     {
-        return new static(
-            id: Arr::get($data, 'id', ''),
-            type: Arr::get($data, 'type', 'sticky_note'),
-            content: Arr::get($data, 'data.content'),
-            shape: Arr::get($data, 'data.shape'),
-            fillColor: Arr::get($data, 'style.fillColor'),
-            textAlign: Arr::get($data, 'style.textAlign'),
-            textAlignVertical: Arr::get($data, 'style.textAlignVertical'),
-            positionX: Arr::get($data, 'position.x'),
-            positionY: Arr::get($data, 'position.y'),
-            width: Arr::get($data, 'geometry.width'),
-            height: Arr::get($data, 'geometry.height'),
-            parentId: Arr::get($data, 'parent.id'),
-            createdAt: Arr::get($data, 'createdAt'),
-            modifiedAt: Arr::get($data, 'modifiedAt'),
+        $px = Arr::get($data, 'position.x');
+        $py = Arr::get($data, 'position.y');
+        $w = Arr::get($data, 'geometry.width');
+        $h = Arr::get($data, 'geometry.height');
+
+        return new self(
+            id: is_string($v = Arr::get($data, 'id', '')) ? $v : '',
+            type: is_string($v = Arr::get($data, 'type', 'sticky_note')) ? $v : 'sticky_note',
+            content: is_string($v = Arr::get($data, 'data.content')) ? $v : null,
+            shape: is_string($v = Arr::get($data, 'data.shape')) ? $v : null,
+            fillColor: is_string($v = Arr::get($data, 'style.fillColor')) ? $v : null,
+            textAlign: is_string($v = Arr::get($data, 'style.textAlign')) ? $v : null,
+            textAlignVertical: is_string($v = Arr::get($data, 'style.textAlignVertical')) ? $v : null,
+            positionX: is_int($px) || is_float($px) ? (float) $px : null,
+            positionY: is_int($py) || is_float($py) ? (float) $py : null,
+            width: is_int($w) || is_float($w) ? (float) $w : null,
+            height: is_int($h) || is_float($h) ? (float) $h : null,
+            parentId: is_string($v = Arr::get($data, 'parent.id')) ? $v : null,
+            createdAt: is_string($v = Arr::get($data, 'createdAt')) ? $v : null,
+            modifiedAt: is_string($v = Arr::get($data, 'modifiedAt')) ? $v : null,
         );
     }
 }

@@ -13,6 +13,7 @@ class UpdateStickyNoteRequest extends Request implements HasBody
 
     protected Method $method = Method::PATCH;
 
+    /** @param array<string, mixed> $data */
     public function __construct(
         protected string $boardId,
         protected string $itemId,
@@ -24,6 +25,7 @@ class UpdateStickyNoteRequest extends Request implements HasBody
         return "/v2/boards/{$this->boardId}/sticky_notes/{$this->itemId}";
     }
 
+    /** @return array<string, mixed> */
     protected function defaultBody(): array
     {
         return $this->data;

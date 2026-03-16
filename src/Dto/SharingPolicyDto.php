@@ -11,16 +11,16 @@ class SharingPolicyDto
         public readonly string $inviteToAccountAndBoardLinkAccess,
         public readonly string $organizationAccess,
         public readonly string $teamAccess,
-    ) {
-    }
+    ) {}
 
-    public static function fromResponse(array $data): static
+    /** @param array<string, mixed> $data */
+    public static function fromResponse(array $data): self
     {
-        return new static(
-            access: Arr::get($data, 'access', ''),
-            inviteToAccountAndBoardLinkAccess: Arr::get($data, 'inviteToAccountAndBoardLinkAccess', ''),
-            organizationAccess: Arr::get($data, 'organizationAccess', ''),
-            teamAccess: Arr::get($data, 'teamAccess', ''),
+        return new self(
+            access: is_string($v = Arr::get($data, 'access', '')) ? $v : '',
+            inviteToAccountAndBoardLinkAccess: is_string($v = Arr::get($data, 'inviteToAccountAndBoardLinkAccess', '')) ? $v : '',
+            organizationAccess: is_string($v = Arr::get($data, 'organizationAccess', '')) ? $v : '',
+            teamAccess: is_string($v = Arr::get($data, 'teamAccess', '')) ? $v : '',
         );
     }
 }

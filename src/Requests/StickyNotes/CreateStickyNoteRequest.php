@@ -13,6 +13,7 @@ class CreateStickyNoteRequest extends Request implements HasBody
 
     protected Method $method = Method::POST;
 
+    /** @param array<string, mixed> $data */
     public function __construct(
         protected string $boardId,
         protected array $data
@@ -23,6 +24,7 @@ class CreateStickyNoteRequest extends Request implements HasBody
         return "/v2/boards/{$this->boardId}/sticky_notes";
     }
 
+    /** @return array<string, mixed> */
     protected function defaultBody(): array
     {
         return $this->data;

@@ -6,6 +6,11 @@ use Illuminate\Support\Arr;
 
 class BoardItemDto
 {
+    /**
+     * @param  array<string, mixed>|null  $data
+     * @param  array<string, mixed>|null  $position
+     * @param  array<string, mixed>|null  $geometry
+     */
     public function __construct(
         public readonly string $id,
         public readonly string $type,
@@ -15,20 +20,32 @@ class BoardItemDto
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
         public readonly ?string $parentId,
-    ) {
-    }
+    ) {}
 
-    public static function fromResponse(array $data): static
+    /** @param array<string, mixed> $data */
+    public static function fromResponse(array $data): self
     {
-        return new static(
-            id: Arr::get($data, 'id', ''),
-            type: Arr::get($data, 'type', ''),
-            data: Arr::get($data, 'data'),
-            position: Arr::get($data, 'position'),
-            geometry: Arr::get($data, 'geometry'),
-            createdAt: Arr::get($data, 'createdAt'),
-            modifiedAt: Arr::get($data, 'modifiedAt'),
-            parentId: Arr::get($data, 'parent.id'),
+        $rawData = Arr::get($data, 'data');
+        /** @var array<string, mixed>|null $itemData */
+        $itemData = is_array($rawData) ? $rawData : null;
+
+        $rawPosition = Arr::get($data, 'position');
+        /** @var array<string, mixed>|null $position */
+        $position = is_array($rawPosition) ? $rawPosition : null;
+
+        $rawGeometry = Arr::get($data, 'geometry');
+        /** @var array<string, mixed>|null $geometry */
+        $geometry = is_array($rawGeometry) ? $rawGeometry : null;
+
+        return new self(
+            id: is_string($v = Arr::get($data, 'id', '')) ? $v : '',
+            type: is_string($v = Arr::get($data, 'type', '')) ? $v : '',
+            data: $itemData,
+            position: $position,
+            geometry: $geometry,
+            createdAt: is_string($v = Arr::get($data, 'createdAt')) ? $v : null,
+            modifiedAt: is_string($v = Arr::get($data, 'modifiedAt')) ? $v : null,
+            parentId: is_string($v = Arr::get($data, 'parent.id')) ? $v : null,
         );
     }
 }

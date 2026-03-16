@@ -13,17 +13,18 @@ class UpdateBoardRequest extends Request implements HasBody
 
     protected Method $method = Method::PATCH;
 
+    /** @param array<string, mixed> $data */
     public function __construct(
         protected string $boardId,
         protected array $data
-    ) {
-    }
+    ) {}
 
     public function resolveEndpoint(): string
     {
         return "/v2/boards/{$this->boardId}";
     }
 
+    /** @return array<string, mixed> */
     protected function defaultBody(): array
     {
         return $this->data;

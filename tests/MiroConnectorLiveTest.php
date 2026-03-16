@@ -8,7 +8,7 @@ use CodebarAg\Miro\MiroConnector;
 // Boards
 // ─────────────────────────────────────────────
 
-it('live: can get boards', function () {
+it('can get boards', function () {
     $connector = new MiroConnector;
 
     $boards = $connector->getBoards();
@@ -17,7 +17,7 @@ it('live: can get boards', function () {
     dump($boards);
 })->group('live');
 
-it('live: can create a board', function () {
+it('can create a board', function () {
     $connector = new MiroConnector;
 
     $board = $connector->createBoard(['name' => 'Live Test Board '.time()]);
@@ -29,7 +29,7 @@ it('live: can create a board', function () {
     $connector->deleteBoard($board->id);
 })->group('live');
 
-it('live: can get a specific board', function () {
+it('can get a specific board', function () {
     $connector = new MiroConnector;
 
     $created = $connector->createBoard(['name' => 'Live Test Board '.time()]);
@@ -41,7 +41,7 @@ it('live: can get a specific board', function () {
     $connector->deleteBoard($created->id);
 })->group('live');
 
-it('live: can update a board', function () {
+it('can update a board', function () {
     $connector = new MiroConnector;
 
     $created = $connector->createBoard(['name' => 'Live Test Board '.time()]);
@@ -52,7 +52,7 @@ it('live: can update a board', function () {
     $connector->deleteBoard($created->id);
 })->group('live');
 
-it('live: can delete a board', function () {
+it('can delete a board', function () {
     $connector = new MiroConnector;
 
     $created = $connector->createBoard(['name' => 'Board to Delete '.time()]);
@@ -65,90 +65,104 @@ it('live: can delete a board', function () {
 // Sticky Notes
 // ─────────────────────────────────────────────
 
-describe('Sticky Notes', function () {
-    beforeEach(function () {
-        $this->connector = new MiroConnector;
-        $this->board = $this->connector->createBoard(['name' => 'Live Test Board StickyNotes'.time()]);
-    });
+it('can get sticky notes from a board', function () {
+    $connector = new MiroConnector;
+    $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
-    afterEach(function () {
-        $this->connector->deleteBoard($this->board->id);
-    });
+    $notes = $connector->getStickyNotes($board->id);
 
-    it('live: can get sticky notes from a board', function () {
-        $notes = $this->connector->getStickyNotes($this->board->id);
+    expect($notes)->toBeArray();
+    dump($notes);
 
-        expect($notes)->toBeArray();
-        dump($notes);
-    });
+    $connector->deleteBoard($board->id);
+})->group('live');
 
-    it('live: can create a sticky note', function () {
-        $note = $this->connector->createStickyNote($this->board->id, [
-            'data' => [
-                'content' => 'Hello from live test!',
-                'shape' => 'square',
-            ],
-            'style' => [
-                'fillColor' => 'light_yellow',
-                'textAlign' => 'center',
-                'textAlignVertical' => 'top',
-            ],
-            'position' => [
-                'x' => 0.0,
-                'y' => 0.0,
-                'origin' => 'center',
-                'relativeTo' => 'canvas_center',
-            ],
-        ]);
+it('can create a sticky note', function () {
+    $connector = new MiroConnector;
+    $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
-        expect($note)->toBeInstanceOf(StickyNoteDto::class)
-            ->and($note->id)->not->toBeEmpty()
-            ->and($note->content)->toBe('Hello from live test!')
-            ->and($note->shape)->toBe('square')
-            ->and($note->fillColor)->toBe('light_yellow');
+    $note = $connector->createStickyNote($board->id, [
+        'data' => [
+            'content' => 'Hello from live test!',
+            'shape' => 'square',
+        ],
+        'style' => [
+            'fillColor' => 'light_yellow',
+            'textAlign' => 'center',
+            'textAlignVertical' => 'top',
+        ],
+        'position' => [
+            'x' => 0.0,
+            'y' => 0.0,
+            'origin' => 'center',
+            'relativeTo' => 'canvas_center',
+        ],
+    ]);
 
-        dump($note);
-    });
+    expect($note)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($note->id)->not->toBeEmpty()
+        ->and($note->content)->toBe('Hello from live test!')
+        ->and($note->shape)->toBe('square')
+        ->and($note->fillColor)->toBe('light_yellow');
 
-    it('live: can get a specific sticky note', function () {
-        $created = $this->connector->createStickyNote($this->board->id, [
-            'data' => ['content' => 'Fetch me!', 'shape' => 'square'],
-        ]);
+    dump($note);
 
-        $note = $this->connector->getStickyNote($this->board->id, $created->id);
+    $connector->deleteBoard($board->id);
+})->group('live');
 
-        expect($note)->toBeInstanceOf(StickyNoteDto::class)
-            ->and($note->id)->toBe($created->id)
-            ->and($note->content)->toBe('Fetch me!');
+it('can get a specific sticky note', function () {
+    $connector = new MiroConnector;
+    $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
-        dump($note);
-    });
+    $created = $connector->createStickyNote($board->id, [
+        'data' => ['content' => 'Fetch me!', 'shape' => 'square'],
+    ]);
 
-    it('live: can update a sticky note', function () {
-        $created = $this->connector->createStickyNote($this->board->id, [
-            'data' => ['content' => 'Original content', 'shape' => 'square'],
-            'style' => ['fillColor' => 'light_yellow'],
-        ]);
+    $note = $connector->getStickyNote($board->id, $created->id);
 
-        $updated = $this->connector->updateStickyNote($this->board->id, $created->id, [
-            'data' => ['content' => 'Updated content'],
-            'style' => ['fillColor' => 'light_pink'],
-        ]);
+    expect($note)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($note->id)->toBe($created->id)
+        ->and($note->content)->toBe('Fetch me!');
 
-        expect($updated)->toBeInstanceOf(StickyNoteDto::class)
-            ->and($updated->content)->toBe('Updated content')
-            ->and($updated->fillColor)->toBe('light_pink');
+    dump($note);
 
-        dump($updated);
-    });
+    $connector->deleteBoard($board->id);
+})->group('live');
 
-    it('live: can delete a sticky note', function () {
-        $created = $this->connector->createStickyNote($this->board->id, [
-            'data' => ['content' => 'Delete me!', 'shape' => 'square'],
-        ]);
+it('can update a sticky note', function () {
+    $connector = new MiroConnector;
+    $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
-        $response = $this->connector->deleteStickyNote($this->board->id, $created->id);
+    $created = $connector->createStickyNote($board->id, [
+        'data' => ['content' => 'Original content', 'shape' => 'square'],
+        'style' => ['fillColor' => 'light_yellow'],
+    ]);
 
-        expect($response->status())->toBe(204);
-    });
+    $updated = $connector->updateStickyNote($board->id, $created->id, [
+        'data' => ['content' => 'Updated content'],
+        'style' => ['fillColor' => 'light_pink'],
+    ]);
+
+    expect($updated)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($updated->content)->toBe('Updated content')
+        ->and($updated->fillColor)->toBe('light_pink');
+
+    dump($updated);
+
+    $connector->deleteBoard($board->id);
+})->group('live');
+
+it('can delete a sticky note', function () {
+    $connector = new MiroConnector;
+    $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
+
+    $created = $connector->createStickyNote($board->id, [
+        'data' => ['content' => 'Delete me!', 'shape' => 'square'],
+    ]);
+
+    $response = $connector->deleteStickyNote($board->id, $created->id);
+
+    expect($response->status())->toBe(204);
+
+    $connector->deleteBoard($board->id);
 })->group('live');
