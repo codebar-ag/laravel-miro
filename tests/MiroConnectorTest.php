@@ -14,13 +14,13 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('can instantiate the connector', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
 
     expect($connector)->toBeInstanceOf(MiroConnector::class);
 });
 
 it('resolves base url correctly', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
 
     expect($connector->resolveBaseUrl())->toBe('https://api.miro.com');
 });
@@ -42,7 +42,7 @@ it('can get boards', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $boards = $connector->getBoards();
@@ -71,7 +71,7 @@ it('can get a specific board', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->getBoard('board_1');
@@ -93,7 +93,7 @@ it('can create a board', function () {
         ], 201),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->createBoard(['name' => 'New Board']);
@@ -114,7 +114,7 @@ it('can update a board', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->updateBoard('board_1', ['name' => 'Renamed Board']);
@@ -128,7 +128,7 @@ it('can delete a board', function () {
         DeleteBoardRequest::class => MockResponse::make([], 204),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $response = $connector->deleteBoard('board_1');
@@ -153,7 +153,7 @@ it('can get board items', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $items = $connector->getBoardItems('board_1');
@@ -184,3 +184,54 @@ it('maps board dto fields correctly', function () {
         ->and($board->teamId)->toBe('team_1')
         ->and($board->projectId)->toBe('project_1');
 });
+
+it('can connect to miro live and get boards', function () {
+    $connector = new MiroConnector;
+    $boards = $connector->getBoards();
+
+    expect($boards)->toBeArray();
+    dump($boards);
+})
+    ->group('live')
+    ->skip()
+    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
+
+it('can connect to miro live and create a board', function () {
+    dump('token: '.config('miro.access_token'));
+
+    $connector = new MiroConnector;
+
+    $response = $connector->send(new CreateBoardRequest(['name' => 'New Board'.time()]));
+    dump('status: '.$response->status());
+    dump('body: ', $response->json());
+
+    expect($response->status())->toBe(201);
+    expect($response->json())->toHaveKey('id');
+    expect($response->json()['name'])->toContain('New Board');
+
+    $connector->deleteBoard($response->json()['id']);
+
+})
+    ->group('live')
+    ->skip()
+    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
+
+it('can connect to miro live and delete a board', function () {
+    $connector = new MiroConnector;
+
+    // First create a board to delete
+    $createResponse = $connector->send(new CreateBoardRequest(['name' => 'Board to Delete'.time()]));
+    $boardId = $createResponse->json()['id'];
+    dump('Created board with ID: '.$boardId);
+
+    // Now delete the board
+    $deleteResponse = $connector->send(new DeleteBoardRequest($boardId));
+    dump('Delete status: '.$deleteResponse->status());
+
+    expect($deleteResponse->status())->toBe(204);
+    expect($deleteResponse->body())->toBeEmpty();
+
+})
+    ->group('live')
+    ->skip()
+    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
