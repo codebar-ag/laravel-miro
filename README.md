@@ -13,6 +13,19 @@ A simple Laravel package for interacting with the [Miro REST API v2](https://dev
 
 ## Installation
 
+
+> **Not yet on Packagist?** Add the repository to your `composer.json` first:
+>
+> ```json
+> "repositories": [
+>     {
+>         "type": "vcs",
+>         "url": "https://github.com/codebar-ag/laravel-miro"
+>     }
+> ]
+> ```
+
+
 Install the package via Composer:
 
 ```bash
@@ -38,97 +51,51 @@ You can generate a personal access token at [miro.com/app/settings/user-profile/
 ### Boards
 
 ```php
-use CodebarAg\Miro\Dto\CreateBoardDto;
-use CodebarAg\Miro\Dto\GetBoardsDto;
-use CodebarAg\Miro\Dto\UpdateBoardDto;
 use CodebarAg\Miro\Facades\Miro;
 
 // List all boards
 $boards = Miro::getBoards();
 
 // List boards with filters
-$boards = Miro::getBoards(new GetBoardsDto(
-    teamId: 'team_123',
-    limit: 10,
-));
+$boards = Miro::getBoards([
+    'team_id' => 'team_123',
+    'limit'   => 10,
+]);
 
 // Get a specific board
-$board = Miro::getBoard('uXjVK_board_id=');
+$board = Miro::getBoard('board_id=');
 
-// Create a board
-$board = Miro::createBoard(new CreateBoardDto(
-    name: 'My Sprint Board',
-    description: 'Q1 planning board',
-));
+// Create a boarda
+$board = Miro::createBoard([
+    'name'        => 'My Sprint Board',
+    'description' => 'Q1 planning board',
+]);
 
 // Update a board
-$board = Miro::updateBoard('uXjVK_board_id=', new UpdateBoardDto(
-    name: 'Q1 Planning',
-));
+$board = Miro::updateBoard('board_id=', [
+    'name' => 'Q1 Planning',
+]);
 
 // Delete a board
-Miro::deleteBoard('uXjVK_board_id=');
+Miro::deleteBoard('board_id=');
 ```
 
 ### Board Items
 
 ```php
-use CodebarAg\Miro\Dto\GetBoardItemsDto;
-use CodebarAg\Miro\Facades\Miro;
-
 // Get all items on a board
-$items = Miro::getBoardItems('uXjVK_board_id=');
+$items = Miro::getBoardItems('board_id=');
 
 // Filter by item type
-$items = Miro::getBoardItems('uXjVK_board_id=', new GetBoardItemsDto(
-    type: 'sticky_note',
-));
+$items = Miro::getBoardItems('board_id=', [
+    'type' => 'sticky_note',
+]);
 
 // Paginate using cursor
-$items = Miro::getBoardItems('uXjVK_board_id=', new GetBoardItemsDto(
-    limit: 50,
-    cursor: 'next_page_cursor',
-));
-```
-
-### Sticky Notes
-
-```php
-use CodebarAg\Miro\Dto\CreateStickyNoteDto;
-use CodebarAg\Miro\Dto\GetStickyNotesDto;
-use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
-use CodebarAg\Miro\Facades\Miro;
-
-// Get all sticky notes on a board
-$notes = Miro::getStickyNotes('uXjVK_board_id=');
-
-// Get sticky notes with filters
-$notes = Miro::getStickyNotes('uXjVK_board_id=', new GetStickyNotesDto(
-    limit: 20,
-));
-
-// Get a specific sticky note
-$note = Miro::getStickyNote('uXjVK_board_id=', 'note_id');
-
-// Create a sticky note
-$note = Miro::createStickyNote('uXjVK_board_id=', new CreateStickyNoteDto(
-    content: 'Hello from Miro!',
-    shape: 'square',
-    fillColor: 'light_yellow',
-    textAlign: 'center',
-    textAlignVertical: 'top',
-    positionX: 0.0,
-    positionY: 0.0,
-));
-
-// Update a sticky note
-$note = Miro::updateStickyNote('uXjVK_board_id=', 'note_id', new UpdateStickyNoteDto(
-    content: 'Updated content',
-    fillColor: 'light_pink',
-));
-
-// Delete a sticky note
-Miro::deleteStickyNote('uXjVK_board_id=', 'note_id');
+$items = Miro::getBoardItems('board_id=', [
+    'limit'  => 50,
+    'cursor' => 'next_page_cursor',
+]);
 ```
 
 ### Return Types
@@ -143,24 +110,20 @@ All methods return typed DTOs:
 | `updateBoard()` | `BoardDto` |
 | `deleteBoard()` | `Saloon\Http\Response` |
 | `getBoardItems()` | `BoardItemDto[]` |
-| `getStickyNotes()` | `StickyNoteDto[]` |
-| `getStickyNote()` | `StickyNoteDto` |
-| `createStickyNote()` | `StickyNoteDto` |
-| `updateStickyNote()` | `StickyNoteDto` |
-| `deleteStickyNote()` | `Saloon\Http\Response` |
 
 #### BoardDto
 
 ```php
-$board->id;           // string
-$board->name;         // string
-$board->description;  // ?string
-$board->type;         // string
-$board->viewLink;     // string  (direct URL to open the board)
-$board->teamId;       // ?string
-$board->projectId;    // ?string
-$board->createdAt;    // ?string (ISO 8601)
-$board->modifiedAt;   // ?string (ISO 8601)
+$board->id;             // string
+$board->name;           // string
+$board->description;    // ?string
+$board->type;           // string
+$board->viewLink;       // string  (direct URL to open the board)
+$board->sharingPolicy;  // ?SharingPolicyDto
+$board->teamId;         // ?string
+$board->projectId;      // ?string
+$board->createdAt;      // ?string (ISO 8601)
+$board->modifiedAt;     // ?string (ISO 8601)
 ```
 
 #### BoardItemDto
@@ -176,56 +139,18 @@ $item->modifiedAt;  // ?string
 $item->parentId;    // ?string
 ```
 
-#### StickyNoteDto
-
-```php
-$note->id;                 // string
-$note->type;               // string
-$note->content;            // ?string
-$note->shape;              // ?string  (square, rectangle)
-$note->fillColor;          // ?string  (light_yellow, light_pink, dark_blue, ...)
-$note->textAlign;          // ?string  (left, center, right)
-$note->textAlignVertical;  // ?string  (top, middle, bottom)
-$note->positionX;          // ?float
-$note->positionY;          // ?float
-$note->width;              // ?float
-$note->height;             // ?float
-$note->parentId;           // ?string  (frame ID if inside a frame)
-$note->createdAt;          // ?string  (ISO 8601)
-$note->modifiedAt;         // ?string  (ISO 8601)
-```
-
-### Input DTOs
-
-All write and filter operations use typed DTOs:
-
-| DTO | Used for |
-|-----|----------|
-| `CreateBoardDto` | `createBoard()` |
-| `UpdateBoardDto` | `updateBoard()` |
-| `GetBoardsDto` | `getBoards()` filter params |
-| `GetBoardItemsDto` | `getBoardItems()` filter params |
-| `CreateStickyNoteDto` | `createStickyNote()` |
-| `UpdateStickyNoteDto` | `updateStickyNote()` |
-| `GetStickyNotesDto` | `getStickyNotes()` filter params |
-
 ### Using the connector directly
 
-Each request class implements `createDtoFromResponse()`, so you can use Saloon's `->dto()` directly:
+If you need more control you can use the connector directly instead of the facade:
 
 ```php
 use CodebarAg\Miro\MiroConnector;
 use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
-use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 
 $connector = new MiroConnector();
+$response  = $connector->send(new GetBoardsRequest(['limit' => 5]));
 
-// ->dto() returns the typed DTO directly
-$boards = $connector->send(new GetBoardsRequest())->dto();
-
-$note = $connector->send(new CreateStickyNoteRequest('uXjVK_board_id=', [
-    'data' => ['content' => 'Hello!', 'shape' => 'square'],
-]))->dto();
+$data = $response->json();
 ```
 
 ## Testing
