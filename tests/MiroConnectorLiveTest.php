@@ -169,5 +169,19 @@ describe('Miro Sticky Notes', function () {
 })->group('live')->skip();
 
 // ─────────────────────────────────────────────
-//
+//  Items
 // ─────────────────────────────────────────────
+
+describe('Miro Board Items', function () {
+    it('can get board items from a board', function () {
+        $connector = new MiroConnector;
+        $board = $connector->createBoard(['name' => 'Live Test Board BoardItems '.time()]);
+
+        $notes = $connector->getBoardItems($board->id);
+
+        expect($notes)->toBeArray();
+        dump($notes);
+
+        $connector->deleteBoard($board->id);
+    });
+})->group('live')->skip();
