@@ -4,6 +4,7 @@ use CodebarAg\Miro\Dto\BoardDto;
 use CodebarAg\Miro\Dto\BoardItemDto;
 use CodebarAg\Miro\Dto\SharingPolicyDto;
 use CodebarAg\Miro\Dto\StickyNoteDto;
+use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\MiroConnector;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
 use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
@@ -13,6 +14,7 @@ use CodebarAg\Miro\Requests\Boards\UpdateBoardRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
 use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
+use CodebarAg\Miro\Requests\StickyNotes\GetBoardStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
@@ -314,6 +316,66 @@ it('maps sticky note dto fields correctly', function () {
         ->and($note->positionY)->toBe(15.0)
         ->and($note->width)->toBe(320.0)
         ->and($note->parentId)->toBe('frame_1');
+});
+
+it('resolves GetBoardStickyNotesRequest endpoint correctly', function () {
+    $request = new GetBoardStickyNotesRequest('board_1');
+
+    expect($request->resolveEndpoint())->toBe('/v2/boards/board_1/sticky_notes');
+});
+
+it('GetBoardStickyNotesRequest sends query params via mock client', function () {
+    $mockClient = new MockClient([
+        GetBoardStickyNotesRequest::class => MockResponse::make([
+            'data' => [
+                [
+                    'id' => 'note_1',
+                    'type' => 'sticky_note',
+                    'data' => ['content' => 'Board note', 'shape' => 'square'],
+                    'style' => ['fillColor' => 'light_yellow'],
+                    'position' => ['x' => 0.0, 'y' => 0.0],
+                    'geometry' => ['width' => 199.0, 'height' => 199.0],
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $request = new GetBoardStickyNotesRequest('board_1', ['limit' => 10]);
+    $response = $connector->send($request);
+
+    expect($response->status())->toBe(200)
+        ->and($response->json('data.0.id'))->toBe('note_1');
+});
+
+it('can get boards via facade', function () {
+    $mockClient = new MockClient([
+        GetBoardsRequest::class => MockResponse::make([
+            'data' => [
+                [
+                    'id' => 'board_1',
+                    'name' => 'Facade Board',
+                    'description' => null,
+                    'type' => 'board',
+                    'viewLink' => 'https://miro.com/app/board/board_1/',
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+    app()->instance(MiroConnector::class, $connector);
+
+    $boards = Miro::getBoards();
+
+    expect($boards)->toBeArray()
+        ->toHaveCount(1)
+        ->and($boards[0])->toBeInstanceOf(BoardDto::class)
+        ->and($boards[0]->id)->toBe('board_1')
+        ->and($boards[0]->name)->toBe('Facade Board');
 });
 
 it('maps board dto fields correctly', function () {

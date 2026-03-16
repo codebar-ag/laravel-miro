@@ -1,6 +1,6 @@
 <?php
 
-namespace CodebarAg\Miro\Requests\Items;
+namespace CodebarAg\Miro\Requests\StickyNotes;
 
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -17,7 +17,7 @@ class GetBoardStickyNotesRequest extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/v2/boards/{board_id}/sticky_notes';
+        return "/v2/boards/{$this->boardId}/sticky_notes";
     }
 
     /** @return array<string, mixed> */
