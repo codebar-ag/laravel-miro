@@ -1,0 +1,31 @@
+<?php
+
+namespace CodebarAg\Miro\Requests\StickyNotes;
+
+use Saloon\Contracts\Body\HasBody;
+use Saloon\Enums\Method;
+use Saloon\Http\Request;
+use Saloon\Traits\Body\HasJsonBody;
+
+class UpdateStickyNoteRequest extends Request implements HasBody
+{
+    use HasJsonBody;
+
+    protected Method $method = Method::PATCH;
+
+    public function __construct(
+        protected string $boardId,
+        protected string $itemId,
+        protected array $data
+    ) {}
+
+    public function resolveEndpoint(): string
+    {
+        return "/v2/boards/{$this->boardId}/sticky_notes/{$this->itemId}";
+    }
+
+    protected function defaultBody(): array
+    {
+        return $this->data;
+    }
+}

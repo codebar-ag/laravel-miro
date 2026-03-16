@@ -3,6 +3,7 @@
 use CodebarAg\Miro\Dto\BoardDto;
 use CodebarAg\Miro\Dto\BoardItemDto;
 use CodebarAg\Miro\Dto\SharingPolicyDto;
+use CodebarAg\Miro\Dto\StickyNoteDto;
 use CodebarAg\Miro\MiroConnector;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
 use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
@@ -10,6 +11,11 @@ use CodebarAg\Miro\Requests\Boards\GetBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
 use CodebarAg\Miro\Requests\Boards\UpdateBoardRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
+use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
+use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
+use CodebarAg\Miro\Requests\StickyNotes\GetStickyNoteRequest;
+use CodebarAg\Miro\Requests\StickyNotes\GetStickyNotesRequest;
+use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -165,6 +171,151 @@ it('can get board items', function () {
         ->and($items[0]->type)->toBe('sticky_note');
 });
 
+it('can get sticky notes', function () {
+    $mockClient = new MockClient([
+        GetStickyNotesRequest::class => MockResponse::make([
+            'data' => [
+                [
+                    'id' => 'note_1',
+                    'type' => 'sticky_note',
+                    'data' => ['content' => 'Hello Miro!', 'shape' => 'square'],
+                    'style' => ['fillColor' => 'light_yellow', 'textAlign' => 'center', 'textAlignVertical' => 'top'],
+                    'position' => ['x' => 10.0, 'y' => 20.0],
+                    'geometry' => ['width' => 199.0, 'height' => 199.0],
+                    'createdAt' => '2024-01-01T00:00:00Z',
+                    'modifiedAt' => '2024-01-01T00:00:00Z',
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $notes = $connector->getStickyNotes('board_1');
+
+    expect($notes)->toBeArray()
+        ->toHaveCount(1)
+        ->and($notes[0])->toBeInstanceOf(StickyNoteDto::class)
+        ->and($notes[0]->id)->toBe('note_1')
+        ->and($notes[0]->content)->toBe('Hello Miro!')
+        ->and($notes[0]->shape)->toBe('square')
+        ->and($notes[0]->fillColor)->toBe('light_yellow');
+});
+
+it('can get a specific sticky note', function () {
+    $mockClient = new MockClient([
+        GetStickyNoteRequest::class => MockResponse::make([
+            'id' => 'note_1',
+            'type' => 'sticky_note',
+            'data' => ['content' => 'Hello Miro!', 'shape' => 'square'],
+            'style' => ['fillColor' => 'light_yellow', 'textAlign' => 'center', 'textAlignVertical' => 'top'],
+            'position' => ['x' => 10.0, 'y' => 20.0],
+            'geometry' => ['width' => 199.0, 'height' => 199.0],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $note = $connector->getStickyNote('board_1', 'note_1');
+
+    expect($note)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($note->id)->toBe('note_1')
+        ->and($note->content)->toBe('Hello Miro!')
+        ->and($note->positionX)->toBe(10.0)
+        ->and($note->positionY)->toBe(20.0)
+        ->and($note->width)->toBe(199.0);
+});
+
+it('can create a sticky note', function () {
+    $mockClient = new MockClient([
+        CreateStickyNoteRequest::class => MockResponse::make([
+            'id' => 'note_new',
+            'type' => 'sticky_note',
+            'data' => ['content' => 'New Note', 'shape' => 'square'],
+            'style' => ['fillColor' => 'light_yellow'],
+            'position' => ['x' => 0.0, 'y' => 0.0],
+            'geometry' => ['width' => 199.0, 'height' => 199.0],
+        ], 201),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $note = $connector->createStickyNote('board_1', [
+        'data' => ['content' => 'New Note', 'shape' => 'square'],
+        'style' => ['fillColor' => 'light_yellow'],
+    ]);
+
+    expect($note)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($note->id)->toBe('note_new')
+        ->and($note->content)->toBe('New Note');
+});
+
+it('can update a sticky note', function () {
+    $mockClient = new MockClient([
+        UpdateStickyNoteRequest::class => MockResponse::make([
+            'id' => 'note_1',
+            'type' => 'sticky_note',
+            'data' => ['content' => 'Updated Note', 'shape' => 'square'],
+            'style' => ['fillColor' => 'light_pink'],
+            'position' => ['x' => 0.0, 'y' => 0.0],
+            'geometry' => ['width' => 199.0, 'height' => 199.0],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $note = $connector->updateStickyNote('board_1', 'note_1', [
+        'data' => ['content' => 'Updated Note'],
+        'style' => ['fillColor' => 'light_pink'],
+    ]);
+
+    expect($note)->toBeInstanceOf(StickyNoteDto::class)
+        ->and($note->content)->toBe('Updated Note')
+        ->and($note->fillColor)->toBe('light_pink');
+});
+
+it('can delete a sticky note', function () {
+    $mockClient = new MockClient([
+        DeleteStickyNoteRequest::class => MockResponse::make([], 204),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->deleteStickyNote('board_1', 'note_1');
+
+    expect($response->status())->toBe(204);
+});
+
+it('maps sticky note dto fields correctly', function () {
+    $note = StickyNoteDto::fromResponse([
+        'id' => 'note_123',
+        'type' => 'sticky_note',
+        'data' => ['content' => 'Test content', 'shape' => 'rectangle'],
+        'style' => ['fillColor' => 'dark_blue', 'textAlign' => 'left', 'textAlignVertical' => 'middle'],
+        'position' => ['x' => 5.0, 'y' => 15.0],
+        'geometry' => ['width' => 320.0, 'height' => 320.0],
+        'parent' => ['id' => 'frame_1'],
+        'createdAt' => '2024-01-01T00:00:00Z',
+        'modifiedAt' => '2024-06-01T00:00:00Z',
+    ]);
+
+    expect($note->id)->toBe('note_123')
+        ->and($note->content)->toBe('Test content')
+        ->and($note->shape)->toBe('rectangle')
+        ->and($note->fillColor)->toBe('dark_blue')
+        ->and($note->textAlign)->toBe('left')
+        ->and($note->textAlignVertical)->toBe('middle')
+        ->and($note->positionX)->toBe(5.0)
+        ->and($note->positionY)->toBe(15.0)
+        ->and($note->width)->toBe(320.0)
+        ->and($note->parentId)->toBe('frame_1');
+});
+
 it('maps board dto fields correctly', function () {
     $board = BoardDto::fromResponse([
         'id' => 'board_123',
@@ -184,54 +335,3 @@ it('maps board dto fields correctly', function () {
         ->and($board->teamId)->toBe('team_1')
         ->and($board->projectId)->toBe('project_1');
 });
-
-it('can connect to miro live and get boards', function () {
-    $connector = new MiroConnector;
-    $boards = $connector->getBoards();
-
-    expect($boards)->toBeArray();
-    dump($boards);
-})
-    ->group('live')
-    ->skip()
-    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
-
-it('can connect to miro live and create a board', function () {
-    dump('token: '.config('miro.access_token'));
-
-    $connector = new MiroConnector;
-
-    $response = $connector->send(new CreateBoardRequest(['name' => 'New Board'.time()]));
-    dump('status: '.$response->status());
-    dump('body: ', $response->json());
-
-    expect($response->status())->toBe(201);
-    expect($response->json())->toHaveKey('id');
-    expect($response->json()['name'])->toContain('New Board');
-
-    $connector->deleteBoard($response->json()['id']);
-
-})
-    ->group('live')
-    ->skip()
-    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
-
-it('can connect to miro live and delete a board', function () {
-    $connector = new MiroConnector;
-
-    // First create a board to delete
-    $createResponse = $connector->send(new CreateBoardRequest(['name' => 'Board to Delete'.time()]));
-    $boardId = $createResponse->json()['id'];
-    dump('Created board with ID: '.$boardId);
-
-    // Now delete the board
-    $deleteResponse = $connector->send(new DeleteBoardRequest($boardId));
-    dump('Delete status: '.$deleteResponse->status());
-
-    expect($deleteResponse->status())->toBe(204);
-    expect($deleteResponse->body())->toBeEmpty();
-
-})
-    ->group('live')
-    ->skip()
-    ->description('This test connects to the live Miro API. Make sure you have a valid access token set in your environment variables.');
