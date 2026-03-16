@@ -2,6 +2,8 @@
 
 namespace CodebarAg\Miro\Dto;
 
+use Illuminate\Support\Arr;
+
 class UpdateStickyNoteDto
 {
     public function __construct(
@@ -49,15 +51,15 @@ class UpdateStickyNoteDto
         ], fn ($v) => $v !== null);
 
         if ($position !== []) {
-            $result['position'] = $position;
+            Arr::set($result, 'position', $position);
         }
 
         if ($this->width !== null) {
-            $result['geometry'] = ['width' => $this->width];
+            Arr::set($result, 'geometry', ['width' => $this->width]);
         }
 
         if ($this->parentId !== null) {
-            $result['parent'] = ['id' => $this->parentId];
+            Arr::set($result, 'parent', ['id' => $this->parentId]);
         }
 
         return $result;

@@ -14,7 +14,7 @@ A simple Laravel package for interacting with the [Miro REST API v2](https://dev
 ## Installation
 
 
-> **Not yet on Packagist?** Add the repository to your `composer.json` first:
+> **Not yet on Packagist!** Add the repository to your `composer.json` first:
 >
 > ```json
 > "repositories": [
