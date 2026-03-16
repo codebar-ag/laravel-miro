@@ -12,7 +12,6 @@ class BoardDto
         public readonly ?string $description,
         public readonly string $type,
         public readonly string $viewLink,
-        public readonly ?SharingPolicyDto $sharingPolicy,
         public readonly ?string $teamId,
         public readonly ?string $projectId,
         public readonly ?string $createdAt,
@@ -22,19 +21,12 @@ class BoardDto
     /** @param array<string, mixed> $data */
     public static function fromResponse(array $data): self
     {
-        $sp = Arr::get($data, 'sharingPolicy');
-        /** @var array<string, mixed> $spData */
-        $spData = is_array($sp) ? $sp : [];
-
         return new self(
             id: is_string($v = Arr::get($data, 'id', '')) ? $v : '',
             name: is_string($v = Arr::get($data, 'name', '')) ? $v : '',
             description: is_string($v = Arr::get($data, 'description')) ? $v : null,
             type: is_string($v = Arr::get($data, 'type', 'board')) ? $v : '',
             viewLink: is_string($v = Arr::get($data, 'viewLink', '')) ? $v : '',
-            sharingPolicy: Arr::has($data, 'sharingPolicy')
-                ? SharingPolicyDto::fromResponse($spData)
-                : null,
             teamId: is_string($v = Arr::get($data, 'team.id')) ? $v : null,
             projectId: is_string($v = Arr::get($data, 'project.id')) ? $v : null,
             createdAt: is_string($v = Arr::get($data, 'createdAt')) ? $v : null,

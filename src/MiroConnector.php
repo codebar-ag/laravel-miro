@@ -4,7 +4,14 @@ namespace CodebarAg\Miro;
 
 use CodebarAg\Miro\Dto\BoardDto;
 use CodebarAg\Miro\Dto\BoardItemDto;
+use CodebarAg\Miro\Dto\CreateBoardDto;
+use CodebarAg\Miro\Dto\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\GetBoardItemsDto;
+use CodebarAg\Miro\Dto\GetBoardsDto;
+use CodebarAg\Miro\Dto\GetStickyNotesDto;
 use CodebarAg\Miro\Dto\StickyNoteDto;
+use CodebarAg\Miro\Dto\UpdateBoardDto;
+use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
 use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardRequest;
@@ -43,135 +50,70 @@ class MiroConnector extends Connector
         return new TokenAuthenticator(is_string($token) ? $token : '');
     }
 
-    /**
-     * Get a list of boards.
-     *
-     * @param  array{team_id?: string, project_id?: string, query?: string, owner?: string, limit?: int, offset?: int, sort?: string}  $params
-     * @return BoardDto[]
-     */
-    public function getBoards(array $params = []): array
+    /** @return BoardDto[] */
+    public function getBoards(?GetBoardsDto $params = null): array
     {
-        $response = $this->send(new GetBoardsRequest($params));
-
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $board) => BoardDto::fromResponse($board), $data);
+        /** @var BoardDto[] */
+        return $this->send(new GetBoardsRequest($params?->toArray() ?? []))->dto();
     }
 
-    /**
-     * Get a specific board by ID.
-     */
     public function getBoard(string $boardId): BoardDto
     {
-        $response = $this->send(new GetBoardRequest($boardId));
-
-        return BoardDto::fromResponse((array) $response->json());
+        /** @var BoardDto */
+        return $this->send(new GetBoardRequest($boardId))->dto();
     }
 
-    /**
-     * Create a new board.
-     *
-     * @param  array{name?: string, description?: string, teamId?: string, sharingPolicy?: array<string, mixed>}  $data
-     */
-    public function createBoard(array $data): BoardDto
+    public function createBoard(CreateBoardDto $data): BoardDto
     {
-        $response = $this->send(new CreateBoardRequest($data));
-
-        return BoardDto::fromResponse((array) $response->json());
+        /** @var BoardDto */
+        return $this->send(new CreateBoardRequest($data->toArray()))->dto();
     }
 
-    /**
-     * Update an existing board.
-     *
-     * @param  array{name?: string, description?: string, sharingPolicy?: array<string, mixed>}  $data
-     */
-    public function updateBoard(string $boardId, array $data): BoardDto
+    public function updateBoard(string $boardId, UpdateBoardDto $data): BoardDto
     {
-        $response = $this->send(new UpdateBoardRequest($boardId, $data));
-
-        return BoardDto::fromResponse((array) $response->json());
+        /** @var BoardDto */
+        return $this->send(new UpdateBoardRequest($boardId, $data->toArray()))->dto();
     }
 
-    /**
-     * Delete a board.
-     */
     public function deleteBoard(string $boardId): Response
     {
         return $this->send(new DeleteBoardRequest($boardId));
     }
 
-    /**
-     * Get all sticky notes on a board.
-     *
-     * @param  array{limit?: int, cursor?: string}  $params
-     * @return StickyNoteDto[]
-     */
-    public function getStickyNotes(string $boardId, array $params = []): array
+    /** @return BoardItemDto[] */
+    public function getBoardItems(string $boardId, ?GetBoardItemsDto $params = null): array
     {
-        $response = $this->send(new GetStickyNotesRequest($boardId, $params));
-
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $item) => StickyNoteDto::fromResponse($item), $data);
+        /** @var BoardItemDto[] */
+        return $this->send(new GetBoardItemsRequest($boardId, $params?->toArray() ?? []))->dto();
     }
 
-    /**
-     * Get a specific sticky note by ID.
-     */
+    /** @return StickyNoteDto[] */
+    public function getStickyNotes(string $boardId, ?GetStickyNotesDto $params = null): array
+    {
+        /** @var StickyNoteDto[] */
+        return $this->send(new GetStickyNotesRequest($boardId, $params?->toArray() ?? []))->dto();
+    }
+
     public function getStickyNote(string $boardId, string $itemId): StickyNoteDto
     {
-        $response = $this->send(new GetStickyNoteRequest($boardId, $itemId));
-
-        return StickyNoteDto::fromResponse((array) $response->json());
+        /** @var StickyNoteDto */
+        return $this->send(new GetStickyNoteRequest($boardId, $itemId))->dto();
     }
 
-    /**
-     * Create a sticky note on a board.
-     *
-     * @param  array{data?: array{content?: string, shape?: string}, style?: array{fillColor?: string, textAlign?: string, textAlignVertical?: string}, position?: array{x?: float, y?: float, origin?: string, relativeTo?: string}, geometry?: array{width?: float}, parent?: array{id?: string}}  $data
-     */
-    public function createStickyNote(string $boardId, array $data): StickyNoteDto
+    public function createStickyNote(string $boardId, CreateStickyNoteDto $data): StickyNoteDto
     {
-        $response = $this->send(new CreateStickyNoteRequest($boardId, $data));
-
-        return StickyNoteDto::fromResponse((array) $response->json());
+        /** @var StickyNoteDto */
+        return $this->send(new CreateStickyNoteRequest($boardId, $data->toArray()))->dto();
     }
 
-    /**
-     * Update a sticky note on a board.
-     *
-     * @param  array{data?: array{content?: string, shape?: string}, style?: array{fillColor?: string, textAlign?: string, textAlignVertical?: string}, position?: array{x?: float, y?: float, origin?: string, relativeTo?: string}, geometry?: array{width?: float}, parent?: array{id?: string}}  $data
-     */
-    public function updateStickyNote(string $boardId, string $itemId, array $data): StickyNoteDto
+    public function updateStickyNote(string $boardId, string $itemId, UpdateStickyNoteDto $data): StickyNoteDto
     {
-        $response = $this->send(new UpdateStickyNoteRequest($boardId, $itemId, $data));
-
-        return StickyNoteDto::fromResponse((array) $response->json());
+        /** @var StickyNoteDto */
+        return $this->send(new UpdateStickyNoteRequest($boardId, $itemId, $data->toArray()))->dto();
     }
 
-    /**
-     * Delete a sticky note from a board.
-     */
     public function deleteStickyNote(string $boardId, string $itemId): Response
     {
         return $this->send(new DeleteStickyNoteRequest($boardId, $itemId));
-    }
-
-    /**
-     * Get items on a board.
-     *
-     * @param  array{limit?: int, cursor?: string, type?: string}  $params
-     * @return BoardItemDto[]
-     */
-    public function getBoardItems(string $boardId, array $params = []): array
-    {
-        $response = $this->send(new GetBoardItemsRequest($boardId, $params));
-
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $item) => BoardItemDto::fromResponse($item), $data);
     }
 }

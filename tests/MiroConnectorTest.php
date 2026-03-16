@@ -2,8 +2,14 @@
 
 use CodebarAg\Miro\Dto\BoardDto;
 use CodebarAg\Miro\Dto\BoardItemDto;
-use CodebarAg\Miro\Dto\SharingPolicyDto;
+use CodebarAg\Miro\Dto\CreateBoardDto;
+use CodebarAg\Miro\Dto\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\GetBoardItemsDto;
+use CodebarAg\Miro\Dto\GetBoardsDto;
+use CodebarAg\Miro\Dto\GetStickyNotesDto;
 use CodebarAg\Miro\Dto\StickyNoteDto;
+use CodebarAg\Miro\Dto\UpdateBoardDto;
+use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
 use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\MiroConnector;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
@@ -62,6 +68,19 @@ it('can get boards', function () {
         ->and($boards[0]->name)->toBe('Test Board');
 });
 
+it('can get boards with filter dto', function () {
+    $mockClient = new MockClient([
+        GetBoardsRequest::class => MockResponse::make(['data' => []], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $boards = $connector->getBoards(new GetBoardsDto(limit: 10, query: 'test'));
+
+    expect($boards)->toBeArray();
+});
+
 it('can get a specific board', function () {
     $mockClient = new MockClient([
         GetBoardRequest::class => MockResponse::make([
@@ -70,12 +89,6 @@ it('can get a specific board', function () {
             'description' => 'A test board',
             'type' => 'board',
             'viewLink' => 'https://miro.com/app/board/board_1/',
-            'sharingPolicy' => [
-                'access' => 'private',
-                'inviteToAccountAndBoardLinkAccess' => 'no_access',
-                'organizationAccess' => 'no_access',
-                'teamAccess' => 'no_access',
-            ],
         ], 200),
     ]);
 
@@ -86,8 +99,7 @@ it('can get a specific board', function () {
 
     expect($board)->toBeInstanceOf(BoardDto::class)
         ->and($board->id)->toBe('board_1')
-        ->and($board->sharingPolicy)->toBeInstanceOf(SharingPolicyDto::class)
-        ->and($board->sharingPolicy->access)->toBe('private');
+        ->and($board->name)->toBe('Test Board');
 });
 
 it('can create a board', function () {
@@ -104,7 +116,7 @@ it('can create a board', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $board = $connector->createBoard(['name' => 'New Board']);
+    $board = $connector->createBoard(new CreateBoardDto(name: 'New Board'));
 
     expect($board)->toBeInstanceOf(BoardDto::class)
         ->and($board->id)->toBe('board_new')
@@ -125,7 +137,7 @@ it('can update a board', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $board = $connector->updateBoard('board_1', ['name' => 'Renamed Board']);
+    $board = $connector->updateBoard('board_1', new UpdateBoardDto(name: 'Renamed Board'));
 
     expect($board)->toBeInstanceOf(BoardDto::class)
         ->and($board->name)->toBe('Renamed Board');
@@ -173,6 +185,19 @@ it('can get board items', function () {
         ->and($items[0]->type)->toBe('sticky_note');
 });
 
+it('can get board items with filter dto', function () {
+    $mockClient = new MockClient([
+        GetBoardItemsRequest::class => MockResponse::make(['data' => []], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $items = $connector->getBoardItems('board_1', new GetBoardItemsDto(limit: 5, type: 'sticky_note'));
+
+    expect($items)->toBeArray();
+});
+
 it('can get sticky notes', function () {
     $mockClient = new MockClient([
         GetStickyNotesRequest::class => MockResponse::make([
@@ -203,6 +228,19 @@ it('can get sticky notes', function () {
         ->and($notes[0]->content)->toBe('Hello Miro!')
         ->and($notes[0]->shape)->toBe('square')
         ->and($notes[0]->fillColor)->toBe('light_yellow');
+});
+
+it('can get sticky notes with filter dto', function () {
+    $mockClient = new MockClient([
+        GetStickyNotesRequest::class => MockResponse::make(['data' => []], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $notes = $connector->getStickyNotes('board_1', new GetStickyNotesDto(limit: 20));
+
+    expect($notes)->toBeArray();
 });
 
 it('can get a specific sticky note', function () {
@@ -245,10 +283,11 @@ it('can create a sticky note', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $note = $connector->createStickyNote('board_1', [
-        'data' => ['content' => 'New Note', 'shape' => 'square'],
-        'style' => ['fillColor' => 'light_yellow'],
-    ]);
+    $note = $connector->createStickyNote('board_1', new CreateStickyNoteDto(
+        content: 'New Note',
+        shape: 'square',
+        fillColor: 'light_yellow',
+    ));
 
     expect($note)->toBeInstanceOf(StickyNoteDto::class)
         ->and($note->id)->toBe('note_new')
@@ -270,10 +309,10 @@ it('can update a sticky note', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $note = $connector->updateStickyNote('board_1', 'note_1', [
-        'data' => ['content' => 'Updated Note'],
-        'style' => ['fillColor' => 'light_pink'],
-    ]);
+    $note = $connector->updateStickyNote('board_1', 'note_1', new UpdateStickyNoteDto(
+        content: 'Updated Note',
+        fillColor: 'light_pink',
+    ));
 
     expect($note)->toBeInstanceOf(StickyNoteDto::class)
         ->and($note->content)->toBe('Updated Note')
@@ -396,4 +435,45 @@ it('maps board dto fields correctly', function () {
         ->and($board->description)->toBe('Board description')
         ->and($board->teamId)->toBe('team_1')
         ->and($board->projectId)->toBe('project_1');
+});
+
+it('CreateStickyNoteDto serializes to correct nested array', function () {
+    $dto = new CreateStickyNoteDto(
+        content: 'Hello',
+        shape: 'square',
+        fillColor: 'light_yellow',
+        positionX: 10.0,
+        positionY: 20.0,
+        width: 199.0,
+        parentId: 'frame_1',
+    );
+
+    expect($dto->toArray())->toBe([
+        'data' => ['content' => 'Hello', 'shape' => 'square'],
+        'style' => ['fillColor' => 'light_yellow'],
+        'position' => ['x' => 10.0, 'y' => 20.0],
+        'geometry' => ['width' => 199.0],
+        'parent' => ['id' => 'frame_1'],
+    ]);
+});
+
+it('CreateBoardDto serializes to correct array', function () {
+    $dto = new CreateBoardDto(name: 'My Board', description: 'A description');
+
+    expect($dto->toArray())->toBe([
+        'name' => 'My Board',
+        'description' => 'A description',
+    ]);
+});
+
+it('UpdateBoardDto omits null fields', function () {
+    $dto = new UpdateBoardDto(name: 'Renamed');
+
+    expect($dto->toArray())->toBe(['name' => 'Renamed']);
+});
+
+it('GetBoardsDto serializes filter params correctly', function () {
+    $dto = new GetBoardsDto(limit: 10, query: 'test');
+
+    expect($dto->toArray())->toMatchArray(['limit' => 10, 'query' => 'test']);
 });
