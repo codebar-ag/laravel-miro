@@ -102,22 +102,6 @@ class MiroConnector extends Connector
     }
 
     /**
-     * Get items on a board.
-     *
-     * @param  array{limit?: int, cursor?: string, type?: string}  $params
-     * @return BoardItemDto[]
-     */
-    public function getBoardItems(string $boardId, array $params = []): array
-    {
-        $response = $this->send(new GetBoardItemsRequest($boardId, $params));
-
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $item) => BoardItemDto::fromResponse($item), $data);
-    }
-
-    /**
      * Get all sticky notes on a board.
      *
      * @param  array{limit?: int, cursor?: string}  $params
@@ -173,5 +157,21 @@ class MiroConnector extends Connector
     public function deleteStickyNote(string $boardId, string $itemId): Response
     {
         return $this->send(new DeleteStickyNoteRequest($boardId, $itemId));
+    }
+
+    /**
+     * Get items on a board.
+     *
+     * @param  array{limit?: int, cursor?: string, type?: string}  $params
+     * @return BoardItemDto[]
+     */
+    public function getBoardItems(string $boardId, array $params = []): array
+    {
+        $response = $this->send(new GetBoardItemsRequest($boardId, $params));
+
+        /** @var array<int, array<string, mixed>> $data */
+        $data = is_array($r = $response->json('data')) ? $r : [];
+
+        return array_map(fn (array $item) => BoardItemDto::fromResponse($item), $data);
     }
 }
