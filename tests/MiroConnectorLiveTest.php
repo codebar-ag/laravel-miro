@@ -9,7 +9,7 @@ use CodebarAg\Miro\MiroConnector;
 // ─────────────────────────────────────────────
 describe('Miro Boards', function () {
     it('can get boards', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
 
         $boards = $connector->getBoards();
 
@@ -18,7 +18,7 @@ describe('Miro Boards', function () {
     });
 
     it('can create a board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
 
         $board = $connector->createBoard(['name' => 'Live Test Board '.time()]);
 
@@ -30,7 +30,7 @@ describe('Miro Boards', function () {
     });
 
     it('can get a specific board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
 
         $created = $connector->createBoard(['name' => 'Live Test Board '.time()]);
         $board = $connector->getBoard($created->id);
@@ -42,7 +42,7 @@ describe('Miro Boards', function () {
     });
 
     it('can update a board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
 
         $created = $connector->createBoard(['name' => 'Live Test Board '.time()]);
         $updated = $connector->updateBoard($created->id, ['name' => 'Updated Board']);
@@ -53,7 +53,7 @@ describe('Miro Boards', function () {
     });
 
     it('can delete a board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
 
         $created = $connector->createBoard(['name' => 'Board to Delete '.time()]);
         $response = $connector->deleteBoard($created->id);
@@ -67,7 +67,7 @@ describe('Miro Boards', function () {
 // ─────────────────────────────────────────────
 describe('Miro Sticky Notes', function () {
     it('can get sticky notes from a board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
         $notes = $connector->getStickyNotes($board->id);
@@ -79,7 +79,7 @@ describe('Miro Sticky Notes', function () {
     });
 
     it('can create a sticky note', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
         $note = $connector->createStickyNote($board->id, [
@@ -111,7 +111,7 @@ describe('Miro Sticky Notes', function () {
     });
 
     it('can get a specific sticky note', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
         $created = $connector->createStickyNote($board->id, [
@@ -130,7 +130,7 @@ describe('Miro Sticky Notes', function () {
     });
 
     it('can update a sticky note', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
         $created = $connector->createStickyNote($board->id, [
@@ -153,7 +153,7 @@ describe('Miro Sticky Notes', function () {
     });
 
     it('can delete a sticky note', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board StickyNotes '.time()]);
 
         $created = $connector->createStickyNote($board->id, [
@@ -174,7 +174,7 @@ describe('Miro Sticky Notes', function () {
 
 describe('Miro Board Items', function () {
     it('can get board items from a board', function () {
-        $connector = new MiroConnector();
+        $connector = new MiroConnector;
         $board = $connector->createBoard(['name' => 'Live Test Board BoardItems '.time()]);
 
         $notes = $connector->getBoardItems($board->id);

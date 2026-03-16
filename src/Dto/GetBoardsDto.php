@@ -12,8 +12,7 @@ class GetBoardsDto
         public readonly ?int $limit = null,
         public readonly ?int $offset = null,
         public readonly ?string $sort = null,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function toArray(): array
