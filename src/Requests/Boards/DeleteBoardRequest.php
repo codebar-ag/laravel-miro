@@ -9,7 +9,9 @@ class DeleteBoardRequest extends Request
 {
     protected Method $method = Method::DELETE;
 
-    public function __construct(protected string $boardId) {}
+    public function __construct(protected string $boardId)
+    {
+    }
 
     public function resolveEndpoint(): string
     {
