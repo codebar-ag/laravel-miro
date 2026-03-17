@@ -21,7 +21,8 @@ class StickyNoteDto
         public readonly ?string $parentId,
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $data */
     public static function fromResponse(array $data): self
