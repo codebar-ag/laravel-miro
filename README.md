@@ -21,7 +21,7 @@ A simple Laravel package for interacting with the [Miro REST API v2](https://dev
 > "repositories": [
 >     {
 >         "type": "path",
->         "url": "/User/maxmusternnn/projects/laravel-miro"
+>         "url": "/User/maxmustermann/projects/laravel-miro"
 >     }
 > ]
 > ```
