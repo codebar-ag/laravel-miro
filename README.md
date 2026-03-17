@@ -52,50 +52,113 @@ You can generate a personal access token at [miro.com/app/settings/user-profile/
 
 ```php
 use CodebarAg\Miro\Facades\Miro;
+use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
+use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
+use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
 
 // List all boards
 $boards = Miro::getBoards();
 
 // List boards with filters
-$boards = Miro::getBoards([
-    'team_id' => 'team_123',
-    'limit'   => 10,
-]);
+$boards = Miro::getBoards(new GetBoardsDto(
+    teamId: 'team_123',
+    limit: 10,
+));
 
 // Get a specific board
-$board = Miro::getBoard('board_id=');
+$board = Miro::getBoard('board_id');
 
-// Create a boarda
-$board = Miro::createBoard([
-    'name'        => 'My Sprint Board',
-    'description' => 'Q1 planning board',
-]);
+// Create a board
+$board = Miro::createBoard(new CreateBoardDto(
+    name: 'My Sprint Board',
+    description: 'Q1 planning board',
+));
 
 // Update a board
-$board = Miro::updateBoard('board_id=', [
-    'name' => 'Q1 Planning',
-]);
+$board = Miro::updateBoard('board_id', new UpdateBoardDto(
+    name: 'Q1 Planning',
+));
 
 // Delete a board
-Miro::deleteBoard('board_id=');
+Miro::deleteBoard('board_id');
 ```
 
 ### Board Items
 
 ```php
+use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
+
 // Get all items on a board
-$items = Miro::getBoardItems('board_id=');
+$items = Miro::getBoardItems('board_id');
 
 // Filter by item type
-$items = Miro::getBoardItems('board_id=', [
-    'type' => 'sticky_note',
-]);
+$items = Miro::getBoardItems('board_id', new GetBoardItemsDto(
+    type: 'sticky_note',
+));
 
-// Paginate using cursor
-$items = Miro::getBoardItems('board_id=', [
-    'limit'  => 50,
-    'cursor' => 'next_page_cursor',
-]);
+// Get a single item by ID
+$item = Miro::getBoardItem('board_id', 'item_id');
+```
+
+### Sticky Notes
+
+```php
+use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
+use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
+
+// Get all sticky notes on a board
+$notes = Miro::getStickyNotes('board_id');
+
+// Get a single sticky note
+$note = Miro::getStickyNote('board_id', 'item_id');
+
+// Create a sticky note
+$note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
+    content: 'Hello World',
+    shape: 'square',
+    fillColor: 'yellow',
+    positionX: 100.0,
+    positionY: 200.0,
+));
+
+// Update a sticky note
+$note = Miro::updateStickyNote('board_id', 'item_id', new UpdateStickyNoteDto(
+    content: 'Updated content',
+));
+
+// Delete a sticky note
+Miro::deleteStickyNote('board_id', 'item_id');
+```
+
+### Frames
+
+```php
+use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
+use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
+
+// Get all frames on a board
+$frames = Miro::getFrames('board_id');
+
+// Get a single frame
+$frame = Miro::getFrame('board_id', 'item_id');
+
+// Create a frame
+$frame = Miro::createFrame('board_id', new CreateFrameDto(
+    title: 'Sprint 1',
+    positionX: 0.0,
+    positionY: 0.0,
+    width: 1920.0,
+    height: 1080.0,
+));
+
+// Update a frame
+$frame = Miro::updateFrame('board_id', 'item_id', new UpdateFrameDto(
+    title: 'Sprint 1 – Updated',
+));
+
+// Delete a frame
+Miro::deleteFrame('board_id', 'item_id');
 ```
 
 ### Return Types
@@ -110,20 +173,30 @@ All methods return typed DTOs:
 | `updateBoard()` | `BoardDto` |
 | `deleteBoard()` | `Saloon\Http\Response` |
 | `getBoardItems()` | `BoardItemDto[]` |
+| `getBoardItem()` | `BoardItemDto` |
+| `getStickyNotes()` | `StickyNoteDto[]` |
+| `getStickyNote()` | `StickyNoteDto` |
+| `createStickyNote()` | `StickyNoteDto` |
+| `updateStickyNote()` | `StickyNoteDto` |
+| `deleteStickyNote()` | `Saloon\Http\Response` |
+| `getFrames()` | `FrameDto[]` |
+| `getFrame()` | `FrameDto` |
+| `createFrame()` | `FrameDto` |
+| `updateFrame()` | `FrameDto` |
+| `deleteFrame()` | `Saloon\Http\Response` |
 
 #### BoardDto
 
 ```php
-$board->id;             // string
-$board->name;           // string
-$board->description;    // ?string
-$board->type;           // string
-$board->viewLink;       // string  (direct URL to open the board)
-$board->sharingPolicy;  // ?SharingPolicyDto
-$board->teamId;         // ?string
-$board->projectId;      // ?string
-$board->createdAt;      // ?string (ISO 8601)
-$board->modifiedAt;     // ?string (ISO 8601)
+$board->id;           // string
+$board->name;         // string
+$board->description;  // ?string
+$board->type;         // string
+$board->viewLink;     // string  (direct URL to open the board)
+$board->teamId;       // ?string
+$board->projectId;    // ?string
+$board->createdAt;    // ?string (ISO 8601)
+$board->modifiedAt;   // ?string (ISO 8601)
 ```
 
 #### BoardItemDto
@@ -137,6 +210,41 @@ $item->geometry;    // ?array (width, height, rotation)
 $item->createdAt;   // ?string
 $item->modifiedAt;  // ?string
 $item->parentId;    // ?string
+```
+
+#### StickyNoteDto
+
+```php
+$note->id;                 // string
+$note->type;               // string
+$note->content;            // ?string
+$note->shape;              // ?string
+$note->fillColor;          // ?string
+$note->textAlign;          // ?string
+$note->textAlignVertical;  // ?string
+$note->positionX;          // ?float
+$note->positionY;          // ?float
+$note->width;              // ?float
+$note->height;             // ?float
+$note->parentId;           // ?string
+$note->createdAt;          // ?string (ISO 8601)
+$note->modifiedAt;         // ?string (ISO 8601)
+```
+
+#### FrameDto
+
+```php
+$frame->id;          // string
+$frame->type;        // string
+$frame->title;       // ?string
+$frame->fillColor;   // ?string
+$frame->positionX;   // ?float
+$frame->positionY;   // ?float
+$frame->width;       // ?float
+$frame->height;      // ?float
+$frame->parentId;    // ?string
+$frame->createdAt;   // ?string (ISO 8601)
+$frame->modifiedAt;  // ?string (ISO 8601)
 ```
 
 ### Using the connector directly

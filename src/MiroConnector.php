@@ -26,6 +26,7 @@ use CodebarAg\Miro\Requests\Frames\DeleteFrameRequest;
 use CodebarAg\Miro\Requests\Frames\GetFrameRequest;
 use CodebarAg\Miro\Requests\Frames\GetFramesRequest;
 use CodebarAg\Miro\Requests\Frames\UpdateFrameRequest;
+use CodebarAg\Miro\Requests\Items\GetBoardItemRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
 use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
@@ -35,9 +36,12 @@ use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
+use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
 class MiroConnector extends Connector
 {
+    use AlwaysThrowOnErrors;
+
     public function resolveBaseUrl(): string
     {
         return 'https://api.miro.com';
@@ -96,11 +100,10 @@ class MiroConnector extends Connector
         return $this->send(new GetBoardItemsRequest($boardId, $params?->toArray() ?? []))->dto();
     }
 
-    /** @return BoardItemDto[] */
-    public function getBoardItem(string $boardId, string $itemId): array
+    public function getBoardItem(string $boardId, string $itemId): BoardItemDto
     {
-        /** @var BoardItemDto[] */
-        return $this->send(new GetBoardItemsRequest($boardId, ['ids' => $itemId]))->dto();
+        /** @var BoardItemDto */
+        return $this->send(new GetBoardItemRequest($boardId, $itemId))->dto();
     }
 
     /** @return StickyNoteDto[] */

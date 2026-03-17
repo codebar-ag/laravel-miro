@@ -1,13 +1,13 @@
 ---
 name: laravel-miro
-description: Interact with the Miro REST API v2 — manage boards, sticky notes, and board items using typed DTOs and the Miro facade or connector.
+description: Interact with the Miro REST API v2 — manage boards, sticky notes, frames, and board items using typed DTOs and the Miro facade or connector.
 ---
 
 # Laravel Miro
 
 ## When to use this skill
 
-Use this skill when working with Miro boards, sticky notes, or board items via the `codebar-ag/laravel-miro` package.
+Use this skill when working with Miro boards, sticky notes, frames, or board items via the `codebar-ag/laravel-miro` package.
 
 ## Setup
 
@@ -23,9 +23,9 @@ Requires `MIRO_ACCESS_TOKEN` in `.env`. Generate a personal access token at miro
 ## Boards
 
 ```php
-use CodebarAg\Miro\Dto\CreateBoardDto;
-use CodebarAg\Miro\Dto\GetBoardsDto;
-use CodebarAg\Miro\Dto\UpdateBoardDto;
+use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
+use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
+use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
 use CodebarAg\Miro\Facades\Miro;
 
 // List — returns BoardDto[]
@@ -62,9 +62,9 @@ $board->modifiedAt;   // ?string (ISO 8601)
 ## Sticky Notes
 
 ```php
-use CodebarAg\Miro\Dto\CreateStickyNoteDto;
-use CodebarAg\Miro\Dto\GetStickyNotesDto;
-use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
+use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 use CodebarAg\Miro\Facades\Miro;
 
 // List — returns StickyNoteDto[]
@@ -102,6 +102,7 @@ Miro::deleteStickyNote('board_id', 'note_id');
 
 ```php
 $note->id;                 // string
+$note->type;               // string
 $note->content;            // ?string
 $note->shape;              // ?string
 $note->fillColor;          // ?string
@@ -116,10 +117,60 @@ $note->createdAt;          // ?string (ISO 8601)
 $note->modifiedAt;         // ?string (ISO 8601)
 ```
 
+## Frames
+
+```php
+use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
+use CodebarAg\Miro\Dto\Frames\GetFramesDto;
+use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
+use CodebarAg\Miro\Facades\Miro;
+
+// List — returns FrameDto[]
+$frames = Miro::getFrames('board_id');
+$frames = Miro::getFrames('board_id', new GetFramesDto(limit: 20));
+
+// Single — returns FrameDto
+$frame = Miro::getFrame('board_id', 'frame_id');
+
+// Create — returns FrameDto
+$frame = Miro::createFrame('board_id', new CreateFrameDto(
+    title: 'Sprint 1',
+    positionX: 0.0,
+    positionY: 0.0,
+    width: 1920.0,
+    height: 1080.0,
+    fillColor: '#ffffff',
+));
+
+// Update — returns FrameDto
+$frame = Miro::updateFrame('board_id', 'frame_id', new UpdateFrameDto(
+    title: 'Sprint 1 – Updated',
+));
+
+// Delete — returns Saloon\Http\Response (status 204)
+Miro::deleteFrame('board_id', 'frame_id');
+```
+
+### FrameDto properties
+
+```php
+$frame->id;          // string
+$frame->type;        // string
+$frame->title;       // ?string
+$frame->fillColor;   // ?string
+$frame->positionX;   // ?float
+$frame->positionY;   // ?float
+$frame->width;       // ?float
+$frame->height;      // ?float
+$frame->parentId;    // ?string
+$frame->createdAt;   // ?string (ISO 8601)
+$frame->modifiedAt;  // ?string (ISO 8601)
+```
+
 ## Board Items
 
 ```php
-use CodebarAg\Miro\Dto\GetBoardItemsDto;
+use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
 use CodebarAg\Miro\Facades\Miro;
 
 // List all items — returns BoardItemDto[]
@@ -129,6 +180,9 @@ $items = Miro::getBoardItems('board_id', new GetBoardItemsDto(
     limit: 50,
     cursor: 'next_page_cursor',
 ));
+
+// Single item by ID — returns BoardItemDto
+$item = Miro::getBoardItem('board_id', 'item_id');
 ```
 
 ## Using the connector directly
@@ -145,12 +199,15 @@ $boards = $connector->send(new GetBoardsRequest())->dto();
 
 ## Input DTOs reference
 
-| DTO | Fields |
-|-----|--------|
-| `CreateBoardDto` | `name` (required), `description`, `teamId` |
-| `UpdateBoardDto` | `name`, `description` (all optional) |
-| `GetBoardsDto` | `teamId`, `projectId`, `query`, `owner`, `limit`, `offset`, `sort` |
-| `GetBoardItemsDto` | `limit`, `cursor`, `type` |
-| `CreateStickyNoteDto` | `content`, `shape`, `fillColor`, `textAlign`, `textAlignVertical`, `positionX`, `positionY`, `positionOrigin`, `width`, `parentId` |
-| `UpdateStickyNoteDto` | same as Create, all optional |
-| `GetStickyNotesDto` | `limit`, `cursor` |
+| DTO | Namespace | Fields |
+|-----|-----------|--------|
+| `CreateBoardDto` | `Dto\Boards` | `name` (required), `description`, `teamId` |
+| `UpdateBoardDto` | `Dto\Boards` | `name`, `description` (all optional) |
+| `GetBoardsDto` | `Dto\Boards` | `teamId`, `projectId`, `query`, `owner`, `limit`, `offset`, `sort` |
+| `GetBoardItemsDto` | `Dto\BoardItems` | `limit`, `cursor`, `type` |
+| `CreateStickyNoteDto` | `Dto\StickyNotes` | `content`, `shape`, `fillColor`, `textAlign`, `textAlignVertical`, `positionX`, `positionY`, `positionOrigin`, `width`, `parentId` |
+| `UpdateStickyNoteDto` | `Dto\StickyNotes` | same as Create, all optional |
+| `GetStickyNotesDto` | `Dto\StickyNotes` | `limit`, `cursor` |
+| `CreateFrameDto` | `Dto\Frames` | `title` (required), `fillColor`, `positionX`, `positionY`, `positionOrigin`, `width`, `height`, `parentId` |
+| `UpdateFrameDto` | `Dto\Frames` | same as Create, all optional |
+| `GetFramesDto` | `Dto\Frames` | `limit`, `cursor` |
