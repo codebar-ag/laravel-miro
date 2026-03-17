@@ -15,12 +15,13 @@ A simple Laravel package for interacting with the [Miro REST API v2](https://dev
 
 
 > **Not yet on Packagist!** Add the repository to your `composer.json` first:
+> clone the Project on your Pc and then link the path to it
 >
 > ```json
 > "repositories": [
 >     {
->         "type": "vcs",
->         "url": "https://github.com/codebar-ag/laravel-miro"
+>         "type": "path",
+>         "url": "/User/maxmusternnn/projects/laravel-miro"
 >     }
 > ]
 > ```
@@ -41,7 +42,7 @@ php artisan vendor:publish --tag="laravel-miro-config"
 Add your Miro access token to your `.env` file:
 
 ```dotenv
-MIRO_ACCESS_TOKEN=your_token_here
+MIRO_ACCESS_TOKEN="your_token_here"
 ```
 
 You can generate a personal access token at [miro.com/app/settings/user-profile/apps](https://miro.com/app/settings/user-profile/apps).
