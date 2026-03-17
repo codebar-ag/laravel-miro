@@ -18,7 +18,8 @@ class BoardItemDto
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
         public readonly ?string $parentId,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{id: string, type: string, data?: array<string, mixed>|null, position?: array<string, mixed>|null, geometry?: array<string, mixed>|null, createdAt?: string|null, modifiedAt?: string|null, parent?: array{id?: string|null}}  $data

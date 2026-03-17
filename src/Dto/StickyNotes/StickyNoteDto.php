@@ -19,7 +19,8 @@ class StickyNoteDto
         public readonly ?string $parentId,
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{id: string, type?: string, data?: array{content?: string|null, shape?: string|null}, style?: array{fillColor?: string|null, textAlign?: string|null, textAlignVertical?: string|null}, position?: array{x?: float, y?: float}, geometry?: array{width?: float, height?: float}, parent?: array{id?: string|null}, createdAt?: string|null, modifiedAt?: string|null}  $data

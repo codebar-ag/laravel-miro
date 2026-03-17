@@ -16,7 +16,8 @@ class FrameDto
         public readonly ?string $parentId,
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{id: string, type?: string, data?: array{title?: string|null}, style?: array{fillColor?: string|null}, position?: array{x?: float, y?: float}, geometry?: array{width?: float, height?: float}, parent?: array{id?: string|null}, createdAt?: string|null, modifiedAt?: string|null}  $data

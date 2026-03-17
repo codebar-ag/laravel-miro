@@ -13,7 +13,8 @@ class CreateFrameDto
         public ?float $width = null,
         public ?float $height = null,
         public ?string $parentId = null,
-    ) {}
+    ) {
+    }
 
     /** @return array<string, mixed> */
     public function toArray(): array

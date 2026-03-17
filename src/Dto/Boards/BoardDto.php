@@ -14,7 +14,8 @@ class BoardDto
         public ?string $projectId,
         public ?string $createdAt,
         public ?string $modifiedAt,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{id: string, name: string, description?: string|null, type?: string, viewLink?: string, team?: array{id?: string|null}, project?: array{id?: string|null}, createdAt?: string|null, modifiedAt?: string|null}  $data
