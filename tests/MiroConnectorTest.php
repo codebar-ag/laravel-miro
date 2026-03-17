@@ -37,13 +37,13 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('can instantiate the connector', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
 
     expect($connector)->toBeInstanceOf(MiroConnector::class);
 });
 
 it('resolves base url correctly', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
 
     expect($connector->resolveBaseUrl())->toBe('https://api.miro.com');
 });
@@ -65,7 +65,7 @@ it('can get boards', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $boards = $connector->getBoards();
@@ -82,7 +82,7 @@ it('can get boards with filter dto', function () {
         GetBoardsRequest::class => MockResponse::make(['data' => []], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $boards = $connector->getBoards(new GetBoardsDto(limit: 10, query: 'test'));
@@ -101,7 +101,7 @@ it('can get a specific board', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->getBoard('board_1');
@@ -122,7 +122,7 @@ it('can create a board', function () {
         ], 201),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->createBoard(new CreateBoardDto(name: 'New Board'));
@@ -143,7 +143,7 @@ it('can update a board', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $board = $connector->updateBoard('board_1', new UpdateBoardDto(name: 'Renamed Board'));
@@ -157,7 +157,7 @@ it('can delete a board', function () {
         DeleteBoardRequest::class => MockResponse::make([], 204),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $response = $connector->deleteBoard('board_1');
@@ -182,7 +182,7 @@ it('can get board items', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $items = $connector->getBoardItems('board_1');
@@ -199,7 +199,7 @@ it('can get board items with filter dto', function () {
         GetBoardItemsRequest::class => MockResponse::make(['data' => []], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $items = $connector->getBoardItems('board_1', new GetBoardItemsDto(limit: 5, type: 'sticky_note'));
@@ -225,7 +225,7 @@ it('can get sticky notes', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $notes = $connector->getStickyNotes('board_1');
@@ -244,7 +244,7 @@ it('can get sticky notes with filter dto', function () {
         GetStickyNotesRequest::class => MockResponse::make(['data' => []], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $notes = $connector->getStickyNotes('board_1', new GetStickyNotesDto(limit: 20));
@@ -264,7 +264,7 @@ it('can get a specific sticky note', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $note = $connector->getStickyNote('board_1', 'note_1');
@@ -289,7 +289,7 @@ it('can create a sticky note', function () {
         ], 201),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $note = $connector->createStickyNote('board_1', new CreateStickyNoteDto(
@@ -315,7 +315,7 @@ it('can update a sticky note', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $note = $connector->updateStickyNote('board_1', 'note_1', new UpdateStickyNoteDto(
@@ -333,7 +333,7 @@ it('can delete a sticky note', function () {
         DeleteStickyNoteRequest::class => MockResponse::make([], 204),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $response = $connector->deleteStickyNote('board_1', 'note_1');
@@ -390,7 +390,7 @@ it('can get frames', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $frames = $connector->getFrames('board_1');
@@ -408,7 +408,7 @@ it('can get frames with filter dto', function () {
         GetFramesRequest::class => MockResponse::make(['data' => []], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $frames = $connector->getFrames('board_1', new GetFramesDto(limit: 10));
@@ -428,7 +428,7 @@ it('can get a specific frame', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $frame = $connector->getFrame('board_1', 'frame_1');
@@ -454,7 +454,7 @@ it('can create a frame', function () {
         ], 201),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $frame = $connector->createFrame('board_1', new CreateFrameDto(
@@ -482,7 +482,7 @@ it('can update a frame', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $frame = $connector->updateFrame('board_1', 'frame_1', new UpdateFrameDto(
@@ -500,7 +500,7 @@ it('can delete a frame', function () {
         DeleteFrameRequest::class => MockResponse::make([], 204),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $response = $connector->deleteFrame('board_1', 'frame_1');
@@ -567,7 +567,7 @@ it('GetFramesDto serializes filter params correctly', function () {
 });
 
 it('GetFramesDto omits null fields', function () {
-    $dto = new GetFramesDto();
+    $dto = new GetFramesDto;
 
     expect($dto->toArray())->toBe([]);
 });
@@ -600,7 +600,7 @@ it('GetBoardStickyNotesRequest sends query params via mock client', function () 
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
     $request = new GetBoardStickyNotesRequest('board_1', ['limit' => 10]);
@@ -625,7 +625,7 @@ it('can get boards via facade', function () {
         ], 200),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
     app()->instance(MiroConnector::class, $connector);
 

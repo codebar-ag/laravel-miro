@@ -20,8 +20,7 @@ class BoardItemDto
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
         public readonly ?string $parentId,
-    ) {
-    }
+    ) {}
 
     /** @param array<string, mixed> $data */
     public static function fromResponse(array $data): self
