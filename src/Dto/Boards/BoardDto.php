@@ -2,9 +2,7 @@
 
 namespace CodebarAg\Miro\Dto\Boards;
 
-use WendellAdriel\ValidatedDTO\ValidatedDTO;
-
-class BoardDto extends ValidatedDTO
+class BoardDto
 {
     public function __construct(
         public string $id,
@@ -17,50 +15,6 @@ class BoardDto extends ValidatedDTO
         public ?string $createdAt,
         public ?string $modifiedAt,
     ) {}
-
-    /** @return array<string, mixed> */
-    protected function defaults(): array
-    {
-        return [
-            'description' => null,
-            'teamId' => null,
-            'projectId' => null,
-            'createdAt' => null,
-            'modifiedAt' => null,
-        ];
-    }
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'id' => 'string',
-            'name' => 'string',
-            'description' => 'string',
-            'type' => 'string',
-            'viewLink' => 'string',
-            'teamId' => 'string',
-            'projectId' => 'string',
-            'createdAt' => 'string',
-            'modifiedAt' => 'string',
-        ];
-    }
-
-    /** @return array<string, array<int, string>> */
-    protected function rules(): array
-    {
-        return [
-            'id' => ['required', 'string'],
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'type' => ['required', 'string'],
-            'viewLink' => ['required', 'string'],
-            'teamId' => ['nullable', 'string'],
-            'projectId' => ['nullable', 'string'],
-            'createdAt' => ['nullable', 'string'],
-            'modifiedAt' => ['nullable', 'string'],
-        ];
-    }
 
     /**
      * @param  array{id: string, name: string, description?: string|null, type?: string, viewLink?: string, team?: array{id?: string|null}, project?: array{id?: string|null}, createdAt?: string|null, modifiedAt?: string|null}  $data

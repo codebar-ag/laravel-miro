@@ -2,8 +2,6 @@
 
 namespace CodebarAg\Miro\Dto\Frames;
 
-use Illuminate\Support\Arr;
-
 class FrameDto
 {
     public function __construct(
@@ -18,29 +16,25 @@ class FrameDto
         public readonly ?string $parentId,
         public readonly ?string $createdAt,
         public readonly ?string $modifiedAt,
-    ) {
-    }
+    ) {}
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param  array{id: string, type?: string, data?: array{title?: string|null}, style?: array{fillColor?: string|null}, position?: array{x?: float, y?: float}, geometry?: array{width?: float, height?: float}, parent?: array{id?: string|null}, createdAt?: string|null, modifiedAt?: string|null}  $data
+     */
     public static function fromResponse(array $data): self
     {
-        $px = Arr::get($data, 'position.x');
-        $py = Arr::get($data, 'position.y');
-        $w = Arr::get($data, 'geometry.width');
-        $h = Arr::get($data, 'geometry.height');
-
         return new self(
-            id: is_string($v = Arr::get($data, 'id', '')) ? $v : '',
-            type: is_string($v = Arr::get($data, 'type', 'frame')) ? $v : 'frame',
-            title: is_string($v = Arr::get($data, 'data.title')) ? $v : null,
-            fillColor: is_string($v = Arr::get($data, 'style.fillColor')) ? $v : null,
-            positionX: is_int($px) || is_float($px) ? (float) $px : null,
-            positionY: is_int($py) || is_float($py) ? (float) $py : null,
-            width: is_int($w) || is_float($w) ? (float) $w : null,
-            height: is_int($h) || is_float($h) ? (float) $h : null,
-            parentId: is_string($v = Arr::get($data, 'parent.id')) ? $v : null,
-            createdAt: is_string($v = Arr::get($data, 'createdAt')) ? $v : null,
-            modifiedAt: is_string($v = Arr::get($data, 'modifiedAt')) ? $v : null,
+            id: $data['id'],
+            type: $data['type'] ?? 'frame',
+            title: $data['data']['title'] ?? null,
+            fillColor: $data['style']['fillColor'] ?? null,
+            positionX: $data['position']['x'] ?? null,
+            positionY: $data['position']['y'] ?? null,
+            width: $data['geometry']['width'] ?? null,
+            height: $data['geometry']['height'] ?? null,
+            parentId: $data['parent']['id'] ?? null,
+            createdAt: $data['createdAt'] ?? null,
+            modifiedAt: $data['modifiedAt'] ?? null,
         );
     }
 }

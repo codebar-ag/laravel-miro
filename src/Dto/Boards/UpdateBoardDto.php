@@ -7,10 +7,9 @@ class UpdateBoardDto
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $description = null,
-    ) {
-    }
+    ) {}
 
-    /** @return array<string, mixed> */
+    /** @return array<string, string> */
     public function toArray(): array
     {
         return array_filter([

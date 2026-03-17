@@ -2,8 +2,6 @@
 
 namespace CodebarAg\Miro\Dto\StickyNotes;
 
-use Illuminate\Support\Arr;
-
 class CreateStickyNoteDto
 {
     public function __construct(
@@ -17,8 +15,7 @@ class CreateStickyNoteDto
         public readonly ?string $positionOrigin = null,
         public readonly ?float $width = null,
         public readonly ?string $parentId = null,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function toArray(): array
@@ -51,15 +48,15 @@ class CreateStickyNoteDto
         ], fn ($v) => $v !== null);
 
         if ($position !== []) {
-            Arr::set($result, 'position', $position);
+            $result['position'] = $position;
         }
 
         if ($this->width !== null) {
-            Arr::set($result, 'geometry', ['width' => $this->width]);
+            $result['geometry'] = ['width' => $this->width];
         }
 
         if ($this->parentId !== null) {
-            Arr::set($result, 'parent', ['id' => $this->parentId]);
+            $result['parent'] = ['id' => $this->parentId];
         }
 
         return $result;

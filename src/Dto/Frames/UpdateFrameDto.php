@@ -2,8 +2,6 @@
 
 namespace CodebarAg\Miro\Dto\Frames;
 
-use Illuminate\Support\Arr;
-
 class UpdateFrameDto
 {
     public function __construct(
@@ -15,8 +13,7 @@ class UpdateFrameDto
         public ?float $width = null,
         public ?float $height = null,
         public ?string $parentId = null,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function toArray(): array
@@ -46,7 +43,7 @@ class UpdateFrameDto
         ], fn ($v) => $v !== null);
 
         if ($position !== []) {
-            Arr::set($result, 'position', $position);
+            $result['position'] = $position;
         }
 
         $geometry = array_filter([
@@ -55,11 +52,11 @@ class UpdateFrameDto
         ], fn ($v) => $v !== null);
 
         if ($geometry !== []) {
-            Arr::set($result, 'geometry', $geometry);
+            $result['geometry'] = $geometry;
         }
 
         if ($this->parentId !== null) {
-            Arr::set($result, 'parent', ['id' => $this->parentId]);
+            $result['parent'] = ['id' => $this->parentId];
         }
 
         return $result;

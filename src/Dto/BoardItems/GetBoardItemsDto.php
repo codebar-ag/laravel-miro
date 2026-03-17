@@ -8,10 +8,9 @@ class GetBoardItemsDto
         public ?int $limit = null,
         public ?string $cursor = null,
         public ?string $type = null,
-    ) {
-    }
+    ) {}
 
-    /** @return array<string, mixed> */
+    /** @return array<string, int|string> */
     public function toArray(): array
     {
         return array_filter([
