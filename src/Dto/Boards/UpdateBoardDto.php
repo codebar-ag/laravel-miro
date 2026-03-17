@@ -1,13 +1,12 @@
 <?php
 
-namespace CodebarAg\Miro\Dto;
+namespace CodebarAg\Miro\Dto\Boards;
 
-class CreateBoardDto
+class UpdateBoardDto
 {
     public function __construct(
-        public readonly string $name,
+        public readonly ?string $name = null,
         public readonly ?string $description = null,
-        public readonly ?string $teamId = null,
     ) {}
 
     /** @return array<string, mixed> */
@@ -16,7 +15,6 @@ class CreateBoardDto
         return array_filter([
             'name' => $this->name,
             'description' => $this->description,
-            'teamId' => $this->teamId,
         ], fn ($v) => $v !== null);
     }
 }

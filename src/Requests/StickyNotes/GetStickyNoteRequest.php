@@ -2,7 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\StickyNotes;
 
-use CodebarAg\Miro\Dto\StickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;

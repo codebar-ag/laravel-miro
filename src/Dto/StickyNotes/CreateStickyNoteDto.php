@@ -1,10 +1,10 @@
 <?php
 
-namespace CodebarAg\Miro\Dto;
+namespace CodebarAg\Miro\Dto\StickyNotes;
 
 use Illuminate\Support\Arr;
 
-class UpdateStickyNoteDto
+class CreateStickyNoteDto
 {
     public function __construct(
         public readonly ?string $content = null,

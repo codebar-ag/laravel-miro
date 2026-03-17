@@ -1,8 +1,8 @@
 <?php
 
-namespace CodebarAg\Miro\Dto;
+namespace CodebarAg\Miro\Dto\Frames;
 
-class GetStickyNotesDto
+class GetFramesDto
 {
     public function __construct(
         public readonly ?int $limit = null,

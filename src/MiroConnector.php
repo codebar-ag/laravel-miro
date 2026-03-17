@@ -2,21 +2,30 @@
 
 namespace CodebarAg\Miro;
 
-use CodebarAg\Miro\Dto\BoardDto;
-use CodebarAg\Miro\Dto\BoardItemDto;
-use CodebarAg\Miro\Dto\CreateBoardDto;
-use CodebarAg\Miro\Dto\CreateStickyNoteDto;
-use CodebarAg\Miro\Dto\GetBoardItemsDto;
-use CodebarAg\Miro\Dto\GetBoardsDto;
-use CodebarAg\Miro\Dto\GetStickyNotesDto;
-use CodebarAg\Miro\Dto\StickyNoteDto;
-use CodebarAg\Miro\Dto\UpdateBoardDto;
-use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
+use CodebarAg\Miro\Dto\BoardItems\BoardItemDto;
+use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
+use CodebarAg\Miro\Dto\Boards\BoardDto;
+use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
+use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
+use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
+use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
+use CodebarAg\Miro\Dto\Frames\FrameDto;
+use CodebarAg\Miro\Dto\Frames\GetFramesDto;
+use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
+use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
+use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
 use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
 use CodebarAg\Miro\Requests\Boards\UpdateBoardRequest;
+use CodebarAg\Miro\Requests\Frames\CreateFrameRequest;
+use CodebarAg\Miro\Requests\Frames\DeleteFrameRequest;
+use CodebarAg\Miro\Requests\Frames\GetFrameRequest;
+use CodebarAg\Miro\Requests\Frames\GetFramesRequest;
+use CodebarAg\Miro\Requests\Frames\UpdateFrameRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
 use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
@@ -87,6 +96,13 @@ class MiroConnector extends Connector
         return $this->send(new GetBoardItemsRequest($boardId, $params?->toArray() ?? []))->dto();
     }
 
+    /** @return BoardItemDto[] */
+    public function getBoardItem(string $boardId, string $itemId): array
+    {
+        /** @var BoardItemDto[] */
+        return $this->send(new GetBoardItemsRequest($boardId, ['ids' => $itemId]))->dto();
+    }
+
     /** @return StickyNoteDto[] */
     public function getStickyNotes(string $boardId, ?GetStickyNotesDto $params = null): array
     {
@@ -115,5 +131,35 @@ class MiroConnector extends Connector
     public function deleteStickyNote(string $boardId, string $itemId): Response
     {
         return $this->send(new DeleteStickyNoteRequest($boardId, $itemId));
+    }
+
+    /** @return FrameDto[] */
+    public function getFrames(string $boardId, ?GetFramesDto $params = null): array
+    {
+        /** @var FrameDto[] */
+        return $this->send(new GetFramesRequest($boardId, $params?->toArray() ?? []))->dto();
+    }
+
+    public function getFrame(string $boardId, string $itemId): FrameDto
+    {
+        /** @var FrameDto */
+        return $this->send(new GetFrameRequest($boardId, $itemId))->dto();
+    }
+
+    public function createFrame(string $boardId, CreateFrameDto $data): FrameDto
+    {
+        /** @var FrameDto */
+        return $this->send(new CreateFrameRequest($boardId, $data->toArray()))->dto();
+    }
+
+    public function updateFrame(string $boardId, string $itemId, UpdateFrameDto $data): FrameDto
+    {
+        /** @var FrameDto */
+        return $this->send(new UpdateFrameRequest($boardId, $itemId, $data->toArray()))->dto();
+    }
+
+    public function deleteFrame(string $boardId, string $itemId): Response
+    {
+        return $this->send(new DeleteFrameRequest($boardId, $itemId));
     }
 }

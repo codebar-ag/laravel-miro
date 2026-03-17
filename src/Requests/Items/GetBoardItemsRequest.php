@@ -2,7 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Items;
 
-use CodebarAg\Miro\Dto\BoardItemDto;
+use CodebarAg\Miro\Dto\BoardItems\BoardItemDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;

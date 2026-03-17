@@ -1,22 +1,25 @@
 <?php
 
-namespace CodebarAg\Miro\Requests\Boards;
+namespace CodebarAg\Miro\Requests\Frames;
 
-use CodebarAg\Miro\Dto\Boards\BoardDto;
+use CodebarAg\Miro\Dto\Frames\FrameDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
-class GetBoardsRequest extends Request
+class GetFramesRequest extends Request
 {
     protected Method $method = Method::GET;
 
     /** @param array<string, mixed> $params */
-    public function __construct(protected array $params = []) {}
+    public function __construct(
+        protected string $boardId,
+        protected array $params = []
+    ) {}
 
     public function resolveEndpoint(): string
     {
-        return '/v2/boards';
+        return "/v2/boards/{$this->boardId}/frames";
     }
 
     /** @return array<string, mixed> */
@@ -25,12 +28,12 @@ class GetBoardsRequest extends Request
         return $this->params;
     }
 
-    /** @return BoardDto[] */
+    /** @return FrameDto[] */
     public function createDtoFromResponse(Response $response): array
     {
         /** @var array<int, array<string, mixed>> $data */
         $data = is_array($r = $response->json('data')) ? $r : [];
 
-        return array_map(fn (array $board) => BoardDto::fromResponse($board), $data);
+        return array_map(fn (array $item) => FrameDto::fromResponse($item), $data);
     }
 }

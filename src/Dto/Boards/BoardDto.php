@@ -1,6 +1,6 @@
 <?php
 
-namespace CodebarAg\Miro\Dto;
+namespace CodebarAg\Miro\Dto\Boards;
 
 use Illuminate\Support\Arr;
 

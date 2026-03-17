@@ -1,15 +1,15 @@
 <?php
 
-namespace CodebarAg\Miro\Requests\StickyNotes;
+namespace CodebarAg\Miro\Requests\Frames;
 
-use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
+use CodebarAg\Miro\Dto\Frames\FrameDto;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
-class UpdateStickyNoteRequest extends Request implements HasBody
+class UpdateFrameRequest extends Request implements HasBody
 {
     use HasJsonBody;
 
@@ -24,7 +24,7 @@ class UpdateStickyNoteRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/sticky_notes/{$this->itemId}";
+        return "/v2/boards/{$this->boardId}/frames/{$this->itemId}";
     }
 
     /** @return array<string, mixed> */
@@ -33,8 +33,8 @@ class UpdateStickyNoteRequest extends Request implements HasBody
         return $this->data;
     }
 
-    public function createDtoFromResponse(Response $response): StickyNoteDto
+    public function createDtoFromResponse(Response $response): FrameDto
     {
-        return StickyNoteDto::fromResponse((array) $response->json());
+        return FrameDto::fromResponse((array) $response->json());
     }
 }

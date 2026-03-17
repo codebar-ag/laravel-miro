@@ -1,15 +1,19 @@
 <?php
 
-use CodebarAg\Miro\Dto\BoardDto;
-use CodebarAg\Miro\Dto\BoardItemDto;
-use CodebarAg\Miro\Dto\CreateBoardDto;
-use CodebarAg\Miro\Dto\CreateStickyNoteDto;
-use CodebarAg\Miro\Dto\GetBoardItemsDto;
-use CodebarAg\Miro\Dto\GetBoardsDto;
-use CodebarAg\Miro\Dto\GetStickyNotesDto;
-use CodebarAg\Miro\Dto\StickyNoteDto;
-use CodebarAg\Miro\Dto\UpdateBoardDto;
-use CodebarAg\Miro\Dto\UpdateStickyNoteDto;
+use CodebarAg\Miro\Dto\BoardItems\BoardItemDto;
+use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
+use CodebarAg\Miro\Dto\Boards\BoardDto;
+use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
+use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
+use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
+use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
+use CodebarAg\Miro\Dto\Frames\FrameDto;
+use CodebarAg\Miro\Dto\Frames\GetFramesDto;
+use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
+use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
+use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
+use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\MiroConnector;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
@@ -17,6 +21,11 @@ use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardRequest;
 use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
 use CodebarAg\Miro\Requests\Boards\UpdateBoardRequest;
+use CodebarAg\Miro\Requests\Frames\CreateFrameRequest;
+use CodebarAg\Miro\Requests\Frames\DeleteFrameRequest;
+use CodebarAg\Miro\Requests\Frames\GetFrameRequest;
+use CodebarAg\Miro\Requests\Frames\GetFramesRequest;
+use CodebarAg\Miro\Requests\Frames\UpdateFrameRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
 use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
@@ -361,6 +370,218 @@ it('resolves GetBoardStickyNotesRequest endpoint correctly', function () {
     $request = new GetBoardStickyNotesRequest('board_1');
 
     expect($request->resolveEndpoint())->toBe('/v2/boards/board_1/sticky_notes');
+});
+
+it('can get frames', function () {
+    $mockClient = new MockClient([
+        GetFramesRequest::class => MockResponse::make([
+            'data' => [
+                [
+                    'id' => 'frame_1',
+                    'type' => 'frame',
+                    'data' => ['title' => 'My Frame'],
+                    'style' => ['fillColor' => '#ffffff'],
+                    'position' => ['x' => 0.0, 'y' => 0.0],
+                    'geometry' => ['width' => 800.0, 'height' => 600.0],
+                    'createdAt' => '2024-01-01T00:00:00Z',
+                    'modifiedAt' => '2024-01-02T00:00:00Z',
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $frames = $connector->getFrames('board_1');
+
+    expect($frames)->toBeArray()
+        ->toHaveCount(1)
+        ->and($frames[0])->toBeInstanceOf(FrameDto::class)
+        ->and($frames[0]->id)->toBe('frame_1')
+        ->and($frames[0]->title)->toBe('My Frame')
+        ->and($frames[0]->fillColor)->toBe('#ffffff');
+});
+
+it('can get frames with filter dto', function () {
+    $mockClient = new MockClient([
+        GetFramesRequest::class => MockResponse::make(['data' => []], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $frames = $connector->getFrames('board_1', new GetFramesDto(limit: 10));
+
+    expect($frames)->toBeArray();
+});
+
+it('can get a specific frame', function () {
+    $mockClient = new MockClient([
+        GetFrameRequest::class => MockResponse::make([
+            'id' => 'frame_1',
+            'type' => 'frame',
+            'data' => ['title' => 'My Frame'],
+            'style' => ['fillColor' => '#ffffff'],
+            'position' => ['x' => 10.0, 'y' => 20.0],
+            'geometry' => ['width' => 800.0, 'height' => 600.0],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $frame = $connector->getFrame('board_1', 'frame_1');
+
+    expect($frame)->toBeInstanceOf(FrameDto::class)
+        ->and($frame->id)->toBe('frame_1')
+        ->and($frame->title)->toBe('My Frame')
+        ->and($frame->positionX)->toBe(10.0)
+        ->and($frame->positionY)->toBe(20.0)
+        ->and($frame->width)->toBe(800.0)
+        ->and($frame->height)->toBe(600.0);
+});
+
+it('can create a frame', function () {
+    $mockClient = new MockClient([
+        CreateFrameRequest::class => MockResponse::make([
+            'id' => 'frame_new',
+            'type' => 'frame',
+            'data' => ['title' => 'New Frame'],
+            'style' => ['fillColor' => '#e6e6e6'],
+            'position' => ['x' => 0.0, 'y' => 0.0],
+            'geometry' => ['width' => 800.0, 'height' => 600.0],
+        ], 201),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $frame = $connector->createFrame('board_1', new CreateFrameDto(
+        title: 'New Frame',
+        fillColor: '#e6e6e6',
+        width: 800.0,
+        height: 600.0,
+    ));
+
+    expect($frame)->toBeInstanceOf(FrameDto::class)
+        ->and($frame->id)->toBe('frame_new')
+        ->and($frame->title)->toBe('New Frame')
+        ->and($frame->fillColor)->toBe('#e6e6e6');
+});
+
+it('can update a frame', function () {
+    $mockClient = new MockClient([
+        UpdateFrameRequest::class => MockResponse::make([
+            'id' => 'frame_1',
+            'type' => 'frame',
+            'data' => ['title' => 'Renamed Frame'],
+            'style' => ['fillColor' => '#cccccc'],
+            'position' => ['x' => 0.0, 'y' => 0.0],
+            'geometry' => ['width' => 800.0, 'height' => 600.0],
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $frame = $connector->updateFrame('board_1', 'frame_1', new UpdateFrameDto(
+        title: 'Renamed Frame',
+        fillColor: '#cccccc',
+    ));
+
+    expect($frame)->toBeInstanceOf(FrameDto::class)
+        ->and($frame->title)->toBe('Renamed Frame')
+        ->and($frame->fillColor)->toBe('#cccccc');
+});
+
+it('can delete a frame', function () {
+    $mockClient = new MockClient([
+        DeleteFrameRequest::class => MockResponse::make([], 204),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->deleteFrame('board_1', 'frame_1');
+
+    expect($response->status())->toBe(204);
+});
+
+it('maps frame dto fields correctly', function () {
+    $frame = FrameDto::fromResponse([
+        'id' => 'frame_123',
+        'type' => 'frame',
+        'data' => ['title' => 'Sprint 1'],
+        'style' => ['fillColor' => '#f2f2f2'],
+        'position' => ['x' => 5.0, 'y' => 15.0],
+        'geometry' => ['width' => 1024.0, 'height' => 768.0],
+        'parent' => ['id' => 'parent_frame_1'],
+        'createdAt' => '2024-01-01T00:00:00Z',
+        'modifiedAt' => '2024-06-01T00:00:00Z',
+    ]);
+
+    expect($frame->id)->toBe('frame_123')
+        ->and($frame->type)->toBe('frame')
+        ->and($frame->title)->toBe('Sprint 1')
+        ->and($frame->fillColor)->toBe('#f2f2f2')
+        ->and($frame->positionX)->toBe(5.0)
+        ->and($frame->positionY)->toBe(15.0)
+        ->and($frame->width)->toBe(1024.0)
+        ->and($frame->height)->toBe(768.0)
+        ->and($frame->parentId)->toBe('parent_frame_1')
+        ->and($frame->createdAt)->toBe('2024-01-01T00:00:00Z')
+        ->and($frame->modifiedAt)->toBe('2024-06-01T00:00:00Z');
+});
+
+it('CreateFrameDto serializes to correct nested array', function () {
+    $dto = new CreateFrameDto(
+        title: 'My Frame',
+        fillColor: '#ffffff',
+        positionX: 10.0,
+        positionY: 20.0,
+        width: 800.0,
+        height: 600.0,
+        parentId: 'parent_1',
+    );
+
+    expect($dto->toArray())->toBe([
+        'data' => ['title' => 'My Frame'],
+        'style' => ['fillColor' => '#ffffff'],
+        'position' => ['x' => 10.0, 'y' => 20.0],
+        'geometry' => ['width' => 800.0, 'height' => 600.0],
+        'parent' => ['id' => 'parent_1'],
+    ]);
+});
+
+it('UpdateFrameDto omits null fields', function () {
+    $dto = new UpdateFrameDto(title: 'Renamed');
+
+    expect($dto->toArray())->toBe(['data' => ['title' => 'Renamed']]);
+});
+
+it('GetFramesDto serializes filter params correctly', function () {
+    $dto = new GetFramesDto(limit: 10, cursor: 'abc123');
+
+    expect($dto->toArray())->toBe(['limit' => 10, 'cursor' => 'abc123']);
+});
+
+it('GetFramesDto omits null fields', function () {
+    $dto = new GetFramesDto;
+
+    expect($dto->toArray())->toBe([]);
+});
+
+it('GetFrameRequest resolves endpoint correctly', function () {
+    $request = new GetFrameRequest('board_1', 'frame_1');
+
+    expect($request->resolveEndpoint())->toBe('/v2/boards/board_1/frames/frame_1');
+});
+
+it('GetFramesRequest resolves endpoint correctly', function () {
+    $request = new GetFramesRequest('board_1');
+
+    expect($request->resolveEndpoint())->toBe('/v2/boards/board_1/frames');
 });
 
 it('GetBoardStickyNotesRequest sends query params via mock client', function () {

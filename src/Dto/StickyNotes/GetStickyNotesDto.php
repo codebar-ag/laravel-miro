@@ -1,13 +1,12 @@
 <?php
 
-namespace CodebarAg\Miro\Dto;
+namespace CodebarAg\Miro\Dto\StickyNotes;
 
-class GetBoardItemsDto
+class GetStickyNotesDto
 {
     public function __construct(
         public readonly ?int $limit = null,
         public readonly ?string $cursor = null,
-        public readonly ?string $type = null,
     ) {}
 
     /** @return array<string, mixed> */
@@ -16,7 +15,6 @@ class GetBoardItemsDto
         return array_filter([
             'limit' => $this->limit,
             'cursor' => $this->cursor,
-            'type' => $this->type,
         ], fn ($v) => $v !== null);
     }
 }
