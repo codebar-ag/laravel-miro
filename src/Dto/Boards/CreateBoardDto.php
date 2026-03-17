@@ -8,7 +8,8 @@ class CreateBoardDto
         public readonly string $name,
         public readonly ?string $description = null,
         public readonly ?string $teamId = null,
-    ) {}
+    ) {
+    }
 
     /** @return array<string, mixed> */
     public function toArray(): array
