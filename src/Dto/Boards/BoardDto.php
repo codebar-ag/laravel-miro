@@ -3,8 +3,9 @@
 namespace CodebarAg\Miro\Dto\Boards;
 
 use Illuminate\Support\Arr;
+use WendellAdriel\ValidatedDTO\ValidatedDTO;
 
-class BoardDto
+class BoardDto extends ValidatedDTO
 {
     public function __construct(
         public string $id,
@@ -16,7 +17,50 @@ class BoardDto
         public ?string $projectId,
         public ?string $createdAt,
         public ?string $modifiedAt,
-    ) {
+    ) {}
+
+    /** @return array<string, mixed> */
+    protected function defaults(): array
+    {
+        return [
+            'description' => null,
+            'teamId' => null,
+            'projectId' => null,
+            'createdAt' => null,
+            'modifiedAt' => null,
+        ];
+    }
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return [
+            'id' => 'string',
+            'name' => 'string',
+            'description' => 'string',
+            'type' => 'string',
+            'viewLink' => 'string',
+            'teamId' => 'string',
+            'projectId' => 'string',
+            'createdAt' => 'string',
+            'modifiedAt' => 'string',
+        ];
+    }
+
+    /** @return array<string, array<int, string>> */
+    protected function rules(): array
+    {
+        return [
+            'id' => ['required', 'string'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'type' => ['required', 'string'],
+            'viewLink' => ['required', 'string'],
+            'teamId' => ['nullable', 'string'],
+            'projectId' => ['nullable', 'string'],
+            'createdAt' => ['nullable', 'string'],
+            'modifiedAt' => ['nullable', 'string'],
+        ];
     }
 
     /** @param array<string, mixed> $data */
@@ -33,15 +77,15 @@ class BoardDto
         $modifiedAt = Arr::get($data, 'modifiedAt');
 
         return new self(
-            id: is_string($id) ? $id : '',
-            name: is_string($name) ? $name : '',
-            description: is_string($description) ? $description : null,
-            type: is_string($type) ? $type : 'board',
-            viewLink: is_string($viewLink) ? $viewLink : '',
-            teamId: is_string($teamId) ? $teamId : null,
-            projectId: is_string($projectId) ? $projectId : null,
-            createdAt: is_string($createdAt) ? $createdAt : null,
-            modifiedAt: is_string($modifiedAt) ? $modifiedAt : null,
+            id: $id,
+            name: $name,
+            description: $description,
+            type: $type,
+            viewLink: $viewLink,
+            teamId: $teamId,
+            projectId: $projectId,
+            createdAt: $createdAt,
+            modifiedAt: $modifiedAt,
         );
     }
 }
