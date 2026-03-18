@@ -3,18 +3,16 @@
 namespace CodebarAg\Miro\Tests;
 
 use CodebarAg\Miro\MiroServiceProvider;
-use Dotenv\Dotenv;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Saloon\Config;
 
 class TestCase extends Orchestra
 {
     protected function setUp(): void
     {
-        if (file_exists(__DIR__.'/../.env.testing')) {
-            Dotenv::createMutable(__DIR__.'/..', '.env.testing')->safeLoad();
-        }
-
         parent::setUp();
+
+        Config::preventStrayRequests();
     }
 
     protected function getPackageProviders($app): array
@@ -24,8 +22,10 @@ class TestCase extends Orchestra
         ];
     }
 
-    protected function getEnvironmentSetUp($app): void
+    public function getEnvironmentSetUp($app): void
     {
-        config()->set('miro.access_token', env('MIRO_ACCESS_TOKEN', 'test-token'));
+        if (is_dir(__DIR__.'/Fixtures/Saloon/') && count(scandir(__DIR__.'/Fixtures/Saloon')) > 0) {
+            $app['config']->set('miro.access_token', 'fake-token');
+        }
     }
 }

@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"id\":\"uXjVKGmRXTo=\",\"name\":\"Renamed Board\",\"description\":null,\"type\":\"board\",\"viewLink\":\"https://miro.com/app/board/uXjVKGmRXTo=/\",\"createdAt\":\"2024-01-01T00:00:00Z\",\"modifiedAt\":\"2024-01-03T00:00:00Z\"}",
+    "context": []
+}

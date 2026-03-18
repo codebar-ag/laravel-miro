@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"data\":[{\"id\":\"uXjVKGmRXTo=\",\"name\":\"Test Board\",\"description\":\"A test board\",\"type\":\"board\",\"viewLink\":\"https://miro.com/app/board/uXjVKGmRXTo=/\",\"createdAt\":\"2024-01-01T00:00:00Z\",\"modifiedAt\":\"2024-01-02T00:00:00Z\"}]}",
+    "context": []
+}

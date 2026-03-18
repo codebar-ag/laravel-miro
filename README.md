@@ -49,6 +49,20 @@ You can generate a personal access token at [miro.com/app/settings/user-profile/
 
 ## Usage
 
+All methods return a typed Response object. Check `successful()` before accessing the DTO — no try/catch needed for API errors like 404, 429, or 400.
+
+```php
+$response = Miro::getBoard('board_id');
+
+if ($response->successful()) {
+    $board = $response->dto(); // BoardDto
+} else {
+    $response->status();     // e.g. 404
+    $response->error();      // e.g. "Board not found"
+    $response->errorCode();  // e.g. "board_not_found"
+}
+```
+
 ### Boards
 
 ```php
@@ -58,29 +72,31 @@ use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
 use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
 
 // List all boards
-$boards = Miro::getBoards();
+$response = Miro::getBoards();
+$boards = $response->dto(); // BoardDto[]
 
 // List boards with filters
-$boards = Miro::getBoards(new GetBoardsDto(
+$response = Miro::getBoards(new GetBoardsDto(
     teamId: 'team_123',
     limit: 10,
 ));
 
 // Get a specific board
-$board = Miro::getBoard('board_id');
+$response = Miro::getBoard('board_id');
+$board = $response->dto(); // BoardDto
 
 // Create a board
-$board = Miro::createBoard(new CreateBoardDto(
+$response = Miro::createBoard(new CreateBoardDto(
     name: 'My Sprint Board',
     description: 'Q1 planning board',
 ));
 
 // Update a board
-$board = Miro::updateBoard('board_id', new UpdateBoardDto(
+$response = Miro::updateBoard('board_id', new UpdateBoardDto(
     name: 'Q1 Planning',
 ));
 
-// Delete a board
+// Delete a board (returns raw Saloon Response)
 Miro::deleteBoard('board_id');
 ```
 
@@ -90,15 +106,17 @@ Miro::deleteBoard('board_id');
 use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
 
 // Get all items on a board
-$items = Miro::getBoardItems('board_id');
+$response = Miro::getBoardItems('board_id');
+$items = $response->dto(); // BoardItemDto[]
 
 // Filter by item type
-$items = Miro::getBoardItems('board_id', new GetBoardItemsDto(
+$response = Miro::getBoardItems('board_id', new GetBoardItemsDto(
     type: 'sticky_note',
 ));
 
 // Get a single item by ID
-$item = Miro::getBoardItem('board_id', 'item_id');
+$response = Miro::getBoardItem('board_id', 'item_id');
+$item = $response->dto(); // BoardItemDto
 ```
 
 ### Sticky Notes
@@ -109,13 +127,15 @@ use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
 use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 
 // Get all sticky notes on a board
-$notes = Miro::getStickyNotes('board_id');
+$response = Miro::getStickyNotes('board_id');
+$notes = $response->dto(); // StickyNoteDto[]
 
 // Get a single sticky note
-$note = Miro::getStickyNote('board_id', 'item_id');
+$response = Miro::getStickyNote('board_id', 'item_id');
+$note = $response->dto(); // StickyNoteDto
 
 // Create a sticky note
-$note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
+$response = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
     content: 'Hello World',
     shape: 'square',
     fillColor: 'yellow',
@@ -124,11 +144,11 @@ $note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
 ));
 
 // Update a sticky note
-$note = Miro::updateStickyNote('board_id', 'item_id', new UpdateStickyNoteDto(
+$response = Miro::updateStickyNote('board_id', 'item_id', new UpdateStickyNoteDto(
     content: 'Updated content',
 ));
 
-// Delete a sticky note
+// Delete a sticky note (returns raw Saloon Response)
 Miro::deleteStickyNote('board_id', 'item_id');
 ```
 
@@ -139,13 +159,15 @@ use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
 use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
 
 // Get all frames on a board
-$frames = Miro::getFrames('board_id');
+$response = Miro::getFrames('board_id');
+$frames = $response->dto(); // FrameDto[]
 
 // Get a single frame
-$frame = Miro::getFrame('board_id', 'item_id');
+$response = Miro::getFrame('board_id', 'item_id');
+$frame = $response->dto(); // FrameDto
 
 // Create a frame
-$frame = Miro::createFrame('board_id', new CreateFrameDto(
+$response = Miro::createFrame('board_id', new CreateFrameDto(
     title: 'Sprint 1',
     positionX: 0.0,
     positionY: 0.0,
@@ -154,37 +176,46 @@ $frame = Miro::createFrame('board_id', new CreateFrameDto(
 ));
 
 // Update a frame
-$frame = Miro::updateFrame('board_id', 'item_id', new UpdateFrameDto(
+$response = Miro::updateFrame('board_id', 'item_id', new UpdateFrameDto(
     title: 'Sprint 1 – Updated',
 ));
 
-// Delete a frame
+// Delete a frame (returns raw Saloon Response)
 Miro::deleteFrame('board_id', 'item_id');
 ```
 
 ### Return Types
 
-All methods return typed DTOs:
+| Method | Return type | `->dto()` type |
+|--------|-------------|----------------|
+| `getBoards()` | `BoardResponse` | `BoardDto[]` |
+| `getBoard()` | `BoardResponse` | `BoardDto` |
+| `createBoard()` | `BoardResponse` | `BoardDto` |
+| `updateBoard()` | `BoardResponse` | `BoardDto` |
+| `deleteBoard()` | `Saloon\Http\Response` | — |
+| `getBoardItems()` | `BoardItemResponse` | `BoardItemDto[]` |
+| `getBoardItem()` | `BoardItemResponse` | `BoardItemDto` |
+| `getStickyNotes()` | `StickyNoteResponse` | `StickyNoteDto[]` |
+| `getStickyNote()` | `StickyNoteResponse` | `StickyNoteDto` |
+| `createStickyNote()` | `StickyNoteResponse` | `StickyNoteDto` |
+| `updateStickyNote()` | `StickyNoteResponse` | `StickyNoteDto` |
+| `deleteStickyNote()` | `Saloon\Http\Response` | — |
+| `getFrames()` | `FrameResponse` | `FrameDto[]` |
+| `getFrame()` | `FrameResponse` | `FrameDto` |
+| `createFrame()` | `FrameResponse` | `FrameDto` |
+| `updateFrame()` | `FrameResponse` | `FrameDto` |
+| `deleteFrame()` | `Saloon\Http\Response` | — |
 
-| Method | Return type |
-|--------|-------------|
-| `getBoards()` | `BoardDto[]` |
-| `getBoard()` | `BoardDto` |
-| `createBoard()` | `BoardDto` |
-| `updateBoard()` | `BoardDto` |
-| `deleteBoard()` | `Saloon\Http\Response` |
-| `getBoardItems()` | `BoardItemDto[]` |
-| `getBoardItem()` | `BoardItemDto` |
-| `getStickyNotes()` | `StickyNoteDto[]` |
-| `getStickyNote()` | `StickyNoteDto` |
-| `createStickyNote()` | `StickyNoteDto` |
-| `updateStickyNote()` | `StickyNoteDto` |
-| `deleteStickyNote()` | `Saloon\Http\Response` |
-| `getFrames()` | `FrameDto[]` |
-| `getFrame()` | `FrameDto` |
-| `createFrame()` | `FrameDto` |
-| `updateFrame()` | `FrameDto` |
-| `deleteFrame()` | `Saloon\Http\Response` |
+All `*Response` objects expose:
+
+```php
+$response->successful();  // bool
+$response->failed();      // bool
+$response->status();      // int  (e.g. 200, 404, 429)
+$response->error();       // ?string — null on success
+$response->errorCode();   // ?string — null on success
+$response->dto();         // typed DTO or null on failure
+```
 
 #### BoardDto
 
