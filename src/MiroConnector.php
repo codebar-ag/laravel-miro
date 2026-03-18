@@ -2,19 +2,15 @@
 
 namespace CodebarAg\Miro;
 
-use CodebarAg\Miro\Dto\BoardItems\BoardItemDto;
 use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
-use CodebarAg\Miro\Dto\Boards\BoardDto;
 use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
 use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
 use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
 use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
-use CodebarAg\Miro\Dto\Frames\FrameDto;
 use CodebarAg\Miro\Dto\Frames\GetFramesDto;
 use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
 use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
 use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
-use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
 use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 use CodebarAg\Miro\Requests\Boards\CreateBoardRequest;
 use CodebarAg\Miro\Requests\Boards\DeleteBoardRequest;
@@ -33,15 +29,16 @@ use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
+use CodebarAg\Miro\Responses\Boards\BoardResponse;
+use CodebarAg\Miro\Responses\Frames\FrameResponse;
+use CodebarAg\Miro\Responses\Items\BoardItemResponse;
+use CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
-use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
 class MiroConnector extends Connector
 {
-    use AlwaysThrowOnErrors;
-
     public function resolveBaseUrl(): string
     {
         return 'https://api.miro.com';
@@ -63,29 +60,32 @@ class MiroConnector extends Connector
         return new TokenAuthenticator(is_string($token) ? $token : '');
     }
 
-    /** @return BoardDto[] */
-    public function getBoards(?GetBoardsDto $params = null): array
+    public function getBoards(?GetBoardsDto $params = null): BoardResponse
     {
-        /** @var BoardDto[] */
-        return $this->send(new GetBoardsRequest($params?->toArray() ?? []))->dto();
+        return BoardResponse::collectionFromResponse(
+            $this->send(new GetBoardsRequest($params?->toArray() ?? []))
+        );
     }
 
-    public function getBoard(string $boardId): BoardDto
+    public function getBoard(string $boardId): BoardResponse
     {
-        /** @var BoardDto */
-        return $this->send(new GetBoardRequest($boardId))->dto();
+        return BoardResponse::fromResponse(
+            $this->send(new GetBoardRequest($boardId))
+        );
     }
 
-    public function createBoard(CreateBoardDto $data): BoardDto
+    public function createBoard(CreateBoardDto $data): BoardResponse
     {
-        /** @var BoardDto */
-        return $this->send(new CreateBoardRequest($data->toArray()))->dto();
+        return BoardResponse::fromResponse(
+            $this->send(new CreateBoardRequest($data->toArray()))
+        );
     }
 
-    public function updateBoard(string $boardId, UpdateBoardDto $data): BoardDto
+    public function updateBoard(string $boardId, UpdateBoardDto $data): BoardResponse
     {
-        /** @var BoardDto */
-        return $this->send(new UpdateBoardRequest($boardId, $data->toArray()))->dto();
+        return BoardResponse::fromResponse(
+            $this->send(new UpdateBoardRequest($boardId, $data->toArray()))
+        );
     }
 
     public function deleteBoard(string $boardId): Response
@@ -93,42 +93,46 @@ class MiroConnector extends Connector
         return $this->send(new DeleteBoardRequest($boardId));
     }
 
-    /** @return BoardItemDto[] */
-    public function getBoardItems(string $boardId, ?GetBoardItemsDto $params = null): array
+    public function getBoardItems(string $boardId, ?GetBoardItemsDto $params = null): BoardItemResponse
     {
-        /** @var BoardItemDto[] */
-        return $this->send(new GetBoardItemsRequest($boardId, $params?->toArray() ?? []))->dto();
+        return BoardItemResponse::collectionFromResponse(
+            $this->send(new GetBoardItemsRequest($boardId, $params?->toArray() ?? []))
+        );
     }
 
-    public function getBoardItem(string $boardId, string $itemId): BoardItemDto
+    public function getBoardItem(string $boardId, string $itemId): BoardItemResponse
     {
-        /** @var BoardItemDto */
-        return $this->send(new GetBoardItemRequest($boardId, $itemId))->dto();
+        return BoardItemResponse::fromResponse(
+            $this->send(new GetBoardItemRequest($boardId, $itemId))
+        );
     }
 
-    /** @return StickyNoteDto[] */
-    public function getStickyNotes(string $boardId, ?GetStickyNotesDto $params = null): array
+    public function getStickyNotes(string $boardId, ?GetStickyNotesDto $params = null): StickyNoteResponse
     {
-        /** @var StickyNoteDto[] */
-        return $this->send(new GetStickyNotesRequest($boardId, $params?->toArray() ?? []))->dto();
+        return StickyNoteResponse::collectionFromResponse(
+            $this->send(new GetStickyNotesRequest($boardId, $params?->toArray() ?? []))
+        );
     }
 
-    public function getStickyNote(string $boardId, string $itemId): StickyNoteDto
+    public function getStickyNote(string $boardId, string $itemId): StickyNoteResponse
     {
-        /** @var StickyNoteDto */
-        return $this->send(new GetStickyNoteRequest($boardId, $itemId))->dto();
+        return StickyNoteResponse::fromResponse(
+            $this->send(new GetStickyNoteRequest($boardId, $itemId))
+        );
     }
 
-    public function createStickyNote(string $boardId, CreateStickyNoteDto $data): StickyNoteDto
+    public function createStickyNote(string $boardId, CreateStickyNoteDto $data): StickyNoteResponse
     {
-        /** @var StickyNoteDto */
-        return $this->send(new CreateStickyNoteRequest($boardId, $data->toArray()))->dto();
+        return StickyNoteResponse::fromResponse(
+            $this->send(new CreateStickyNoteRequest($boardId, $data->toArray()))
+        );
     }
 
-    public function updateStickyNote(string $boardId, string $itemId, UpdateStickyNoteDto $data): StickyNoteDto
+    public function updateStickyNote(string $boardId, string $itemId, UpdateStickyNoteDto $data): StickyNoteResponse
     {
-        /** @var StickyNoteDto */
-        return $this->send(new UpdateStickyNoteRequest($boardId, $itemId, $data->toArray()))->dto();
+        return StickyNoteResponse::fromResponse(
+            $this->send(new UpdateStickyNoteRequest($boardId, $itemId, $data->toArray()))
+        );
     }
 
     public function deleteStickyNote(string $boardId, string $itemId): Response
@@ -136,29 +140,32 @@ class MiroConnector extends Connector
         return $this->send(new DeleteStickyNoteRequest($boardId, $itemId));
     }
 
-    /** @return FrameDto[] */
-    public function getFrames(string $boardId, ?GetFramesDto $params = null): array
+    public function getFrames(string $boardId, ?GetFramesDto $params = null): FrameResponse
     {
-        /** @var FrameDto[] */
-        return $this->send(new GetFramesRequest($boardId, $params?->toArray() ?? []))->dto();
+        return FrameResponse::collectionFromResponse(
+            $this->send(new GetFramesRequest($boardId, $params?->toArray() ?? []))
+        );
     }
 
-    public function getFrame(string $boardId, string $itemId): FrameDto
+    public function getFrame(string $boardId, string $itemId): FrameResponse
     {
-        /** @var FrameDto */
-        return $this->send(new GetFrameRequest($boardId, $itemId))->dto();
+        return FrameResponse::fromResponse(
+            $this->send(new GetFrameRequest($boardId, $itemId))
+        );
     }
 
-    public function createFrame(string $boardId, CreateFrameDto $data): FrameDto
+    public function createFrame(string $boardId, CreateFrameDto $data): FrameResponse
     {
-        /** @var FrameDto */
-        return $this->send(new CreateFrameRequest($boardId, $data->toArray()))->dto();
+        return FrameResponse::fromResponse(
+            $this->send(new CreateFrameRequest($boardId, $data->toArray()))
+        );
     }
 
-    public function updateFrame(string $boardId, string $itemId, UpdateFrameDto $data): FrameDto
+    public function updateFrame(string $boardId, string $itemId, UpdateFrameDto $data): FrameResponse
     {
-        /** @var FrameDto */
-        return $this->send(new UpdateFrameRequest($boardId, $itemId, $data->toArray()))->dto();
+        return FrameResponse::fromResponse(
+            $this->send(new UpdateFrameRequest($boardId, $itemId, $data->toArray()))
+        );
     }
 
     public function deleteFrame(string $boardId, string $itemId): Response

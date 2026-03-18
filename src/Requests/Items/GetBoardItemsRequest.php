@@ -2,10 +2,8 @@
 
 namespace CodebarAg\Miro\Requests\Items;
 
-use CodebarAg\Miro\Dto\BoardItems\BoardItemDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
-use Saloon\Http\Response;
 
 class GetBoardItemsRequest extends Request
 {
@@ -26,14 +24,5 @@ class GetBoardItemsRequest extends Request
     protected function defaultQuery(): array
     {
         return $this->params;
-    }
-
-    /** @return BoardItemDto[] */
-    public function createDtoFromResponse(Response $response): array
-    {
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $item) => BoardItemDto::fromResponse($item), $data);
     }
 }

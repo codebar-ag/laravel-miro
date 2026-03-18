@@ -2,10 +2,8 @@
 
 namespace CodebarAg\Miro\Requests\StickyNotes;
 
-use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
-use Saloon\Http\Response;
 
 class GetStickyNotesRequest extends Request
 {
@@ -26,14 +24,5 @@ class GetStickyNotesRequest extends Request
     protected function defaultQuery(): array
     {
         return array_merge(['type' => 'sticky_note'], $this->params);
-    }
-
-    /** @return StickyNoteDto[] */
-    public function createDtoFromResponse(Response $response): array
-    {
-        /** @var array<int, array<string, mixed>> $data */
-        $data = is_array($r = $response->json('data')) ? $r : [];
-
-        return array_map(fn (array $item) => StickyNoteDto::fromResponse($item), $data);
     }
 }

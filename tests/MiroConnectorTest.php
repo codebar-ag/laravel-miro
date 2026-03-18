@@ -33,6 +33,10 @@ use CodebarAg\Miro\Requests\StickyNotes\GetBoardStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
+use CodebarAg\Miro\Responses\Boards\BoardResponse;
+use CodebarAg\Miro\Responses\Frames\FrameResponse;
+use CodebarAg\Miro\Responses\Items\BoardItemResponse;
+use CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -68,13 +72,15 @@ it('can get boards', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $boards = $connector->getBoards();
+    $response = $connector->getBoards();
 
-    expect($boards)->toBeArray()
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray()
         ->toHaveCount(1)
-        ->and($boards[0])->toBeInstanceOf(BoardDto::class)
-        ->and($boards[0]->id)->toBe('board_1')
-        ->and($boards[0]->name)->toBe('Test Board');
+        ->and($response->dto()[0])->toBeInstanceOf(BoardDto::class)
+        ->and($response->dto()[0]->id)->toBe('board_1')
+        ->and($response->dto()[0]->name)->toBe('Test Board');
 });
 
 it('can get boards with filter dto', function () {
@@ -85,9 +91,11 @@ it('can get boards with filter dto', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $boards = $connector->getBoards(new GetBoardsDto(limit: 10, query: 'test'));
+    $response = $connector->getBoards(new GetBoardsDto(limit: 10, query: 'test'));
 
-    expect($boards)->toBeArray();
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray();
 });
 
 it('can get a specific board', function () {
@@ -104,11 +112,13 @@ it('can get a specific board', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $board = $connector->getBoard('board_1');
+    $response = $connector->getBoard('board_1');
 
-    expect($board)->toBeInstanceOf(BoardDto::class)
-        ->and($board->id)->toBe('board_1')
-        ->and($board->name)->toBe('Test Board');
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(BoardDto::class)
+        ->and($response->dto()->id)->toBe('board_1')
+        ->and($response->dto()->name)->toBe('Test Board');
 });
 
 it('can create a board', function () {
@@ -125,11 +135,13 @@ it('can create a board', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $board = $connector->createBoard(new CreateBoardDto(name: 'New Board'));
+    $response = $connector->createBoard(new CreateBoardDto(name: 'New Board'));
 
-    expect($board)->toBeInstanceOf(BoardDto::class)
-        ->and($board->id)->toBe('board_new')
-        ->and($board->name)->toBe('New Board');
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(BoardDto::class)
+        ->and($response->dto()->id)->toBe('board_new')
+        ->and($response->dto()->name)->toBe('New Board');
 });
 
 it('can update a board', function () {
@@ -146,10 +158,12 @@ it('can update a board', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $board = $connector->updateBoard('board_1', new UpdateBoardDto(name: 'Renamed Board'));
+    $response = $connector->updateBoard('board_1', new UpdateBoardDto(name: 'Renamed Board'));
 
-    expect($board)->toBeInstanceOf(BoardDto::class)
-        ->and($board->name)->toBe('Renamed Board');
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(BoardDto::class)
+        ->and($response->dto()->name)->toBe('Renamed Board');
 });
 
 it('can delete a board', function () {
@@ -185,13 +199,15 @@ it('can get board items', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $items = $connector->getBoardItems('board_1');
+    $response = $connector->getBoardItems('board_1');
 
-    expect($items)->toBeArray()
+    expect($response)->toBeInstanceOf(BoardItemResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray()
         ->toHaveCount(1)
-        ->and($items[0])->toBeInstanceOf(BoardItemDto::class)
-        ->and($items[0]->id)->toBe('item_1')
-        ->and($items[0]->type)->toBe('sticky_note');
+        ->and($response->dto()[0])->toBeInstanceOf(BoardItemDto::class)
+        ->and($response->dto()[0]->id)->toBe('item_1')
+        ->and($response->dto()[0]->type)->toBe('sticky_note');
 });
 
 it('can get board items with filter dto', function () {
@@ -202,9 +218,11 @@ it('can get board items with filter dto', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $items = $connector->getBoardItems('board_1', new GetBoardItemsDto(limit: 5, type: 'sticky_note'));
+    $response = $connector->getBoardItems('board_1', new GetBoardItemsDto(limit: 5, type: 'sticky_note'));
 
-    expect($items)->toBeArray();
+    expect($response)->toBeInstanceOf(BoardItemResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray();
 });
 
 it('can get sticky notes', function () {
@@ -228,15 +246,17 @@ it('can get sticky notes', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $notes = $connector->getStickyNotes('board_1');
+    $response = $connector->getStickyNotes('board_1');
 
-    expect($notes)->toBeArray()
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray()
         ->toHaveCount(1)
-        ->and($notes[0])->toBeInstanceOf(StickyNoteDto::class)
-        ->and($notes[0]->id)->toBe('note_1')
-        ->and($notes[0]->content)->toBe('Hello Miro!')
-        ->and($notes[0]->shape)->toBe('square')
-        ->and($notes[0]->fillColor)->toBe('light_yellow');
+        ->and($response->dto()[0])->toBeInstanceOf(StickyNoteDto::class)
+        ->and($response->dto()[0]->id)->toBe('note_1')
+        ->and($response->dto()[0]->content)->toBe('Hello Miro!')
+        ->and($response->dto()[0]->shape)->toBe('square')
+        ->and($response->dto()[0]->fillColor)->toBe('light_yellow');
 });
 
 it('can get sticky notes with filter dto', function () {
@@ -247,9 +267,11 @@ it('can get sticky notes with filter dto', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $notes = $connector->getStickyNotes('board_1', new GetStickyNotesDto(limit: 20));
+    $response = $connector->getStickyNotes('board_1', new GetStickyNotesDto(limit: 20));
 
-    expect($notes)->toBeArray();
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray();
 });
 
 it('can get a specific sticky note', function () {
@@ -267,14 +289,16 @@ it('can get a specific sticky note', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $note = $connector->getStickyNote('board_1', 'note_1');
+    $response = $connector->getStickyNote('board_1', 'note_1');
 
-    expect($note)->toBeInstanceOf(StickyNoteDto::class)
-        ->and($note->id)->toBe('note_1')
-        ->and($note->content)->toBe('Hello Miro!')
-        ->and($note->positionX)->toBe(10.0)
-        ->and($note->positionY)->toBe(20.0)
-        ->and($note->width)->toBe(199.0);
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(StickyNoteDto::class)
+        ->and($response->dto()->id)->toBe('note_1')
+        ->and($response->dto()->content)->toBe('Hello Miro!')
+        ->and($response->dto()->positionX)->toBe(10.0)
+        ->and($response->dto()->positionY)->toBe(20.0)
+        ->and($response->dto()->width)->toBe(199.0);
 });
 
 it('can create a sticky note', function () {
@@ -292,15 +316,17 @@ it('can create a sticky note', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $note = $connector->createStickyNote('board_1', new CreateStickyNoteDto(
+    $response = $connector->createStickyNote('board_1', new CreateStickyNoteDto(
         content: 'New Note',
         shape: 'square',
         fillColor: 'light_yellow',
     ));
 
-    expect($note)->toBeInstanceOf(StickyNoteDto::class)
-        ->and($note->id)->toBe('note_new')
-        ->and($note->content)->toBe('New Note');
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(StickyNoteDto::class)
+        ->and($response->dto()->id)->toBe('note_new')
+        ->and($response->dto()->content)->toBe('New Note');
 });
 
 it('can update a sticky note', function () {
@@ -318,14 +344,16 @@ it('can update a sticky note', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $note = $connector->updateStickyNote('board_1', 'note_1', new UpdateStickyNoteDto(
+    $response = $connector->updateStickyNote('board_1', 'note_1', new UpdateStickyNoteDto(
         content: 'Updated Note',
         fillColor: 'light_pink',
     ));
 
-    expect($note)->toBeInstanceOf(StickyNoteDto::class)
-        ->and($note->content)->toBe('Updated Note')
-        ->and($note->fillColor)->toBe('light_pink');
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(StickyNoteDto::class)
+        ->and($response->dto()->content)->toBe('Updated Note')
+        ->and($response->dto()->fillColor)->toBe('light_pink');
 });
 
 it('can delete a sticky note', function () {
@@ -393,14 +421,16 @@ it('can get frames', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $frames = $connector->getFrames('board_1');
+    $response = $connector->getFrames('board_1');
 
-    expect($frames)->toBeArray()
+    expect($response)->toBeInstanceOf(FrameResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray()
         ->toHaveCount(1)
-        ->and($frames[0])->toBeInstanceOf(FrameDto::class)
-        ->and($frames[0]->id)->toBe('frame_1')
-        ->and($frames[0]->title)->toBe('My Frame')
-        ->and($frames[0]->fillColor)->toBe('#ffffff');
+        ->and($response->dto()[0])->toBeInstanceOf(FrameDto::class)
+        ->and($response->dto()[0]->id)->toBe('frame_1')
+        ->and($response->dto()[0]->title)->toBe('My Frame')
+        ->and($response->dto()[0]->fillColor)->toBe('#ffffff');
 });
 
 it('can get frames with filter dto', function () {
@@ -411,9 +441,11 @@ it('can get frames with filter dto', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $frames = $connector->getFrames('board_1', new GetFramesDto(limit: 10));
+    $response = $connector->getFrames('board_1', new GetFramesDto(limit: 10));
 
-    expect($frames)->toBeArray();
+    expect($response)->toBeInstanceOf(FrameResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray();
 });
 
 it('can get a specific frame', function () {
@@ -431,15 +463,17 @@ it('can get a specific frame', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $frame = $connector->getFrame('board_1', 'frame_1');
+    $response = $connector->getFrame('board_1', 'frame_1');
 
-    expect($frame)->toBeInstanceOf(FrameDto::class)
-        ->and($frame->id)->toBe('frame_1')
-        ->and($frame->title)->toBe('My Frame')
-        ->and($frame->positionX)->toBe(10.0)
-        ->and($frame->positionY)->toBe(20.0)
-        ->and($frame->width)->toBe(800.0)
-        ->and($frame->height)->toBe(600.0);
+    expect($response)->toBeInstanceOf(FrameResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(FrameDto::class)
+        ->and($response->dto()->id)->toBe('frame_1')
+        ->and($response->dto()->title)->toBe('My Frame')
+        ->and($response->dto()->positionX)->toBe(10.0)
+        ->and($response->dto()->positionY)->toBe(20.0)
+        ->and($response->dto()->width)->toBe(800.0)
+        ->and($response->dto()->height)->toBe(600.0);
 });
 
 it('can create a frame', function () {
@@ -457,17 +491,19 @@ it('can create a frame', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $frame = $connector->createFrame('board_1', new CreateFrameDto(
+    $response = $connector->createFrame('board_1', new CreateFrameDto(
         title: 'New Frame',
         fillColor: '#e6e6e6',
         width: 800.0,
         height: 600.0,
     ));
 
-    expect($frame)->toBeInstanceOf(FrameDto::class)
-        ->and($frame->id)->toBe('frame_new')
-        ->and($frame->title)->toBe('New Frame')
-        ->and($frame->fillColor)->toBe('#e6e6e6');
+    expect($response)->toBeInstanceOf(FrameResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(FrameDto::class)
+        ->and($response->dto()->id)->toBe('frame_new')
+        ->and($response->dto()->title)->toBe('New Frame')
+        ->and($response->dto()->fillColor)->toBe('#e6e6e6');
 });
 
 it('can update a frame', function () {
@@ -485,14 +521,16 @@ it('can update a frame', function () {
     $connector = new MiroConnector;
     $connector->withMockClient($mockClient);
 
-    $frame = $connector->updateFrame('board_1', 'frame_1', new UpdateFrameDto(
+    $response = $connector->updateFrame('board_1', 'frame_1', new UpdateFrameDto(
         title: 'Renamed Frame',
         fillColor: '#cccccc',
     ));
 
-    expect($frame)->toBeInstanceOf(FrameDto::class)
-        ->and($frame->title)->toBe('Renamed Frame')
-        ->and($frame->fillColor)->toBe('#cccccc');
+    expect($response)->toBeInstanceOf(FrameResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeInstanceOf(FrameDto::class)
+        ->and($response->dto()->title)->toBe('Renamed Frame')
+        ->and($response->dto()->fillColor)->toBe('#cccccc');
 });
 
 it('can delete a frame', function () {
@@ -629,13 +667,15 @@ it('can get boards via facade', function () {
     $connector->withMockClient($mockClient);
     app()->instance(MiroConnector::class, $connector);
 
-    $boards = Miro::getBoards();
+    $response = Miro::getBoards();
 
-    expect($boards)->toBeArray()
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeTrue()
+        ->and($response->dto())->toBeArray()
         ->toHaveCount(1)
-        ->and($boards[0])->toBeInstanceOf(BoardDto::class)
-        ->and($boards[0]->id)->toBe('board_1')
-        ->and($boards[0]->name)->toBe('Facade Board');
+        ->and($response->dto()[0])->toBeInstanceOf(BoardDto::class)
+        ->and($response->dto()[0]->id)->toBe('board_1')
+        ->and($response->dto()[0]->name)->toBe('Facade Board');
 });
 
 it('maps board dto fields correctly', function () {
@@ -697,4 +737,99 @@ it('GetBoardsDto serializes filter params correctly', function () {
     $dto = new GetBoardsDto(limit: 10, query: 'test');
 
     expect($dto->toArray())->toMatchArray(['limit' => 10, 'query' => 'test']);
+});
+
+// Error handling tests
+
+it('returns failed BoardResponse on 404', function () {
+    $mockClient = new MockClient([
+        GetBoardRequest::class => MockResponse::make([
+            'status' => 404,
+            'code' => 'board_not_found',
+            'message' => 'Board not found',
+            'type' => 'error',
+        ], 404),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->getBoard('nonexistent');
+
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeFalse()
+        ->and($response->failed())->toBeTrue()
+        ->and($response->status())->toBe(404)
+        ->and($response->error())->toBe('Board not found')
+        ->and($response->errorCode())->toBe('board_not_found')
+        ->and($response->dto())->toBeNull();
+});
+
+it('returns failed BoardResponse on 429 rate limit', function () {
+    $mockClient = new MockClient([
+        GetBoardsRequest::class => MockResponse::make([
+            'status' => 429,
+            'code' => 'ratelimit_exceeded',
+            'message' => 'Too many requests',
+            'type' => 'error',
+        ], 429),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->getBoards();
+
+    expect($response)->toBeInstanceOf(BoardResponse::class)
+        ->and($response->successful())->toBeFalse()
+        ->and($response->status())->toBe(429)
+        ->and($response->error())->toBe('Too many requests')
+        ->and($response->errorCode())->toBe('ratelimit_exceeded')
+        ->and($response->dto())->toBeNull();
+});
+
+it('returns failed StickyNoteResponse on 400 validation error', function () {
+    $mockClient = new MockClient([
+        CreateStickyNoteRequest::class => MockResponse::make([
+            'status' => 400,
+            'code' => 'invalid_request',
+            'message' => 'Invalid sticky note data',
+            'type' => 'error',
+        ], 400),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->createStickyNote('board_1', new CreateStickyNoteDto(
+        content: 'New Note',
+        shape: 'square',
+    ));
+
+    expect($response)->toBeInstanceOf(StickyNoteResponse::class)
+        ->and($response->successful())->toBeFalse()
+        ->and($response->status())->toBe(400)
+        ->and($response->error())->toBe('Invalid sticky note data')
+        ->and($response->errorCode())->toBe('invalid_request')
+        ->and($response->dto())->toBeNull();
+});
+
+it('returns null for error and errorCode on successful response', function () {
+    $mockClient = new MockClient([
+        GetBoardRequest::class => MockResponse::make([
+            'id' => 'board_1',
+            'name' => 'Test Board',
+            'type' => 'board',
+            'viewLink' => 'https://miro.com/app/board/board_1/',
+        ], 200),
+    ]);
+
+    $connector = new MiroConnector;
+    $connector->withMockClient($mockClient);
+
+    $response = $connector->getBoard('board_1');
+
+    expect($response->successful())->toBeTrue()
+        ->and($response->error())->toBeNull()
+        ->and($response->errorCode())->toBeNull();
 });

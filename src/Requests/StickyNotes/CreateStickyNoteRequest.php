@@ -2,11 +2,9 @@
 
 namespace CodebarAg\Miro\Requests\StickyNotes;
 
-use CodebarAg\Miro\Dto\StickyNotes\StickyNoteDto;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
-use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
 class CreateStickyNoteRequest extends Request implements HasBody
@@ -30,10 +28,5 @@ class CreateStickyNoteRequest extends Request implements HasBody
     protected function defaultBody(): array
     {
         return $this->data;
-    }
-
-    public function createDtoFromResponse(Response $response): StickyNoteDto
-    {
-        return StickyNoteDto::fromResponse((array) $response->json());
     }
 }
