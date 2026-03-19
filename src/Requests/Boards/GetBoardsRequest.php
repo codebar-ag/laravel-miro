@@ -10,7 +10,9 @@ class GetBoardsRequest extends Request
     protected Method $method = Method::GET;
 
     /** @param array<string, mixed> $params */
-    public function __construct(protected array $params = []) {}
+    public function __construct(protected array $params = [])
+    {
+    }
 
     public function resolveEndpoint(): string
     {

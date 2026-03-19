@@ -20,7 +20,7 @@ it('can perform the request', function () {
         DeleteStickyNoteRequest::class => MockResponse::fixture('StickyNotes/delete-sticky-note'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new DeleteStickyNoteRequest('uXjVKGmRXTo=', '3458764591589797401'));
 
     Saloon::assertSent(DeleteStickyNoteRequest::class);

@@ -20,7 +20,7 @@ it('can perform the request', function () {
         GetBoardItemRequest::class => MockResponse::fixture('Items/get-board-item'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new GetBoardItemRequest('uXjVKGmRXTo=', '3458764591589797401'));
 
     Saloon::assertSent(GetBoardItemRequest::class);
