@@ -17,7 +17,7 @@ class MiroServiceProvider extends PackageServiceProvider
     public function registeringPackage(): void
     {
         $this->app->bind(MiroConnector::class, function () {
-            return new MiroConnector;
+            return new MiroConnector();
         });
     }
 }

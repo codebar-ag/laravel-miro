@@ -20,7 +20,7 @@ it('can perform the request', function () {
         DeleteFrameRequest::class => MockResponse::fixture('Frames/delete-frame'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new DeleteFrameRequest('uXjVKGmRXTo=', '3458764591589797501'));
 
     Saloon::assertSent(DeleteFrameRequest::class);

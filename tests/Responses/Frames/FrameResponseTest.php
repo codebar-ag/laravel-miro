@@ -9,7 +9,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('fromResponse returns a FrameDto on success', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         GetFrameRequest::class => MockResponse::make([
             'id' => '3458764591589797501',
@@ -37,7 +37,7 @@ it('fromResponse returns a FrameDto on success', function () {
 });
 
 it('collectionFromResponse returns an array of FrameDto on success', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         GetFramesRequest::class => MockResponse::make([
             'data' => [
@@ -71,7 +71,7 @@ it('collectionFromResponse returns an array of FrameDto on success', function ()
 });
 
 it('fromResponse returns null dto on failure', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         GetFrameRequest::class => MockResponse::make([
             'status' => 404,
