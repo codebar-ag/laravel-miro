@@ -15,5 +15,5 @@ it('omits null fields', function () {
 });
 
 it('returns empty array when all fields are null', function () {
-    expect((new GetBoardItemsDto())->toArray())->toBe([]);
+    expect((new GetBoardItemsDto)->toArray())->toBe([]);
 });
