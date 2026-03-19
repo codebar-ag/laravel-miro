@@ -1,5 +1,6 @@
 <?php
 
+use CodebarAg\Miro\Tests\Live\TestCase as LiveTestCase;
 use CodebarAg\Miro\Tests\TestCase;
 use Saloon\Laravel\Saloon;
 
@@ -7,7 +8,9 @@ uses(TestCase::class)
     ->afterEach(function () {
         Saloon::fake([]);
     })
-    ->in(__DIR__);
+    ->in('Core', 'Dto', 'Facades', 'Requests', 'Responses');
+
+uses(LiveTestCase::class)->in('Live');
 
 /**
  * Helper function to check if fixtures should be reset/regenerated.
