@@ -20,7 +20,7 @@ it('can perform the request', function () {
         CreateBoardRequest::class => MockResponse::fixture('Boards/create-board'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new CreateBoardRequest((new CreateBoardDto(name: 'New Board'))->toArray()));
 
     Saloon::assertSent(CreateBoardRequest::class);
