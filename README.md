@@ -12,6 +12,7 @@ This package was developed to give you a quick start to the Miro API.
 - [What is Miro?](#-what-is-miro)
 - [Requirements](#-requirements)
 - [Installation](#️-installation)
+- [Laravel Boost Skill](#-laravel-boost-skill)
 - [Usage](#-usage)
   - [Response Handling](#response-handling)
   - [DTOs](#dtos)
@@ -58,6 +59,16 @@ MIRO_ACCESS_TOKEN=your_access_token_here
 ```
 
 You can generate a personal access token at [miro.com/app/settings/user-profile/apps](https://miro.com/app/settings/user-profile/apps).
+
+## 🤖 Laravel Boost Skill
+
+This package includes a [Laravel Boost](https://laravel.com/docs/boost) skill. If you use Laravel Boost in your project, the skill is automatically installed when you run:
+
+```bash
+php artisan boost:install
+```
+
+The skill provides AI agents with full context about the package — available methods, DTOs, response handling, and usage patterns.
 
 ## 🚀 Usage
 
