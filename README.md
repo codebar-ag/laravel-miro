@@ -35,7 +35,7 @@ Miro is an online collaborative whiteboard platform that enables teams to work e
 
 | Package  | PHP           | Laravel       |
 |----------|---------------|---------------|
-| v1.0.0   | ^8.2          | ^10.0 \| ^11.0 \| ^12.0 |
+| v0.1.1   | ^8.4          | ^12.0 \| ^13.0 |
 
 ## ⚙️ Installation
 
@@ -321,6 +321,18 @@ Miro::deleteFrame('board_id', 'item_id'); // returns Saloon\Http\Response
 ```bash
 composer test
 ```
+
+To run the live API tests against the real Miro API, set your token as an environment variable:
+```env
+MIRO_ACCESS_TOKEN=your_access_token_here 
+```
+
+
+```bash
+vendor/bin/pest --group=live
+```
+
+Alternatively, add it to `.env.testing` in the project root.
 
 ## 📝 Changelog
 
