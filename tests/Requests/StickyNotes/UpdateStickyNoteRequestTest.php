@@ -21,7 +21,7 @@ it('can perform the request', function () {
         UpdateStickyNoteRequest::class => MockResponse::fixture('StickyNotes/update-sticky-note'),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $response = $connector->send(
         new UpdateStickyNoteRequest('uXjVKGmRXTo=', '3458764591589797401', (new UpdateStickyNoteDto(
             content: 'Updated Note',

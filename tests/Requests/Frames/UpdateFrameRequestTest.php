@@ -21,7 +21,7 @@ it('can perform the request', function () {
         UpdateFrameRequest::class => MockResponse::fixture('Frames/update-frame'),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $response = $connector->send(
         new UpdateFrameRequest('uXjVKGmRXTo=', '3458764591589797501', (new UpdateFrameDto(
             title: 'Renamed Frame',
