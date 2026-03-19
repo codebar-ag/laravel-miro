@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Saloon\Http\Response deleteBoard(string $boardId)
  * @method static \CodebarAg\Miro\Responses\Items\BoardItemResponse getBoardItems(string $boardId, ?\CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto $params = null)
  * @method static \CodebarAg\Miro\Responses\Items\BoardItemResponse getBoardItem(string $boardId, string $itemId)
+ * @method static \CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse getBoardStickyNotes(string $boardId, ?\CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto $params = null)
  * @method static \CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse getStickyNotes(string $boardId, ?\CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto $params = null)
  * @method static \CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse getStickyNote(string $boardId, string $itemId)
  * @method static \CodebarAg\Miro\Responses\StickyNotes\StickyNoteResponse createStickyNote(string $boardId, \CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto $data)

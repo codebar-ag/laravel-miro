@@ -26,6 +26,7 @@ use CodebarAg\Miro\Requests\Items\GetBoardItemRequest;
 use CodebarAg\Miro\Requests\Items\GetBoardItemsRequest;
 use CodebarAg\Miro\Requests\StickyNotes\CreateStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\DeleteStickyNoteRequest;
+use CodebarAg\Miro\Requests\StickyNotes\GetBoardStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNoteRequest;
 use CodebarAg\Miro\Requests\StickyNotes\GetStickyNotesRequest;
 use CodebarAg\Miro\Requests\StickyNotes\UpdateStickyNoteRequest;
@@ -104,6 +105,13 @@ class MiroConnector extends Connector
     {
         return BoardItemResponse::fromResponse(
             $this->send(new GetBoardItemRequest($boardId, $itemId))
+        );
+    }
+
+    public function getBoardStickyNotes(string $boardId, ?GetStickyNotesDto $params = null): StickyNoteResponse
+    {
+        return StickyNoteResponse::collectionFromResponse(
+            $this->send(new GetBoardStickyNotesRequest($boardId, $params?->toArray() ?? []))
         );
     }
 
