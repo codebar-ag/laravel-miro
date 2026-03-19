@@ -1,0 +1,8 @@
+{
+    "statusCode": 201,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"id\":\"3458764591589797402\",\"type\":\"sticky_note\",\"data\":{\"content\":\"New Note\",\"shape\":\"square\"},\"style\":{\"fillColor\":\"light_yellow\",\"textAlign\":\"center\",\"textAlignVertical\":\"top\"},\"position\":{\"x\":0.0,\"y\":0.0},\"geometry\":{\"width\":199.0,\"height\":199.0},\"createdAt\":\"2024-01-01T00:00:00Z\",\"modifiedAt\":\"2024-01-01T00:00:00Z\"}",
+    "context": []
+}

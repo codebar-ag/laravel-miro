@@ -1,6 +1,6 @@
 ---
 name: laravel-miro
-description: Interact with the Miro REST API v2 — manage boards, sticky notes, frames, and board items using typed DTOs and the Miro facade or connector.
+description: Interact with the Miro REST API v2 — manage boards, sticky notes, frames, and board items using typed DTOs and Response objects via the Miro facade or connector.
 ---
 
 # Laravel Miro
@@ -17,8 +17,25 @@ Requires `MIRO_ACCESS_TOKEN` in `.env`. Generate a personal access token at miro
 
 - All methods are available via the `Miro` facade or the `MiroConnector` directly.
 - **Input** always uses typed DTOs — never plain arrays.
-- **Output** is always a typed DTO or `Saloon\Http\Response` (for deletes).
-- Each request class implements `createDtoFromResponse()`, so `->dto()` works directly on the response.
+- **Output** is always a typed `*Response` object (wraps the Saloon response) or `Saloon\Http\Response` (for deletes).
+- Call `->dto()` on the response to get the typed DTO or array of DTOs. Returns `null` on failure.
+- Always check `->successful()` before calling `->dto()`.
+
+## Response Handling
+
+```php
+$response = Miro::getBoard('board_id');
+
+if ($response->successful()) {
+    $board = $response->dto(); // BoardDto
+} else {
+    $response->status();     // int    (e.g. 404)
+    $response->error();      // ?string
+    $response->errorCode();  // ?string
+}
+```
+
+All `*Response` objects expose: `successful()`, `failed()`, `status()`, `error()`, `errorCode()`, `dto()`.
 
 ## Boards
 
@@ -28,18 +45,18 @@ use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
 use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
 use CodebarAg\Miro\Facades\Miro;
 
-// List — returns BoardDto[]
-$boards = Miro::getBoards();
-$boards = Miro::getBoards(new GetBoardsDto(teamId: 'team_123', limit: 10));
+// List — returns BoardResponse, ->dto() is BoardDto[]
+$response = Miro::getBoards();
+$response = Miro::getBoards(new GetBoardsDto(teamId: 'team_123', limit: 10));
 
-// Single — returns BoardDto
-$board = Miro::getBoard('board_id');
+// Single — returns BoardResponse, ->dto() is BoardDto
+$response = Miro::getBoard('board_id');
 
-// Create — returns BoardDto
-$board = Miro::createBoard(new CreateBoardDto(name: 'My Board', description: 'Optional'));
+// Create — returns BoardResponse, ->dto() is BoardDto
+$response = Miro::createBoard(new CreateBoardDto(name: 'My Board', description: 'Optional'));
 
-// Update — returns BoardDto
-$board = Miro::updateBoard('board_id', new UpdateBoardDto(name: 'Renamed'));
+// Update — returns BoardResponse, ->dto() is BoardDto
+$response = Miro::updateBoard('board_id', new UpdateBoardDto(name: 'Renamed'));
 
 // Delete — returns Saloon\Http\Response (status 204)
 Miro::deleteBoard('board_id');
@@ -67,15 +84,15 @@ use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
 use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
 use CodebarAg\Miro\Facades\Miro;
 
-// List — returns StickyNoteDto[]
-$notes = Miro::getStickyNotes('board_id');
-$notes = Miro::getStickyNotes('board_id', new GetStickyNotesDto(limit: 20));
+// List — returns StickyNoteResponse, ->dto() is StickyNoteDto[]
+$response = Miro::getStickyNotes('board_id');
+$response = Miro::getStickyNotes('board_id', new GetStickyNotesDto(limit: 20));
 
-// Single — returns StickyNoteDto
-$note = Miro::getStickyNote('board_id', 'note_id');
+// Single — returns StickyNoteResponse, ->dto() is StickyNoteDto
+$response = Miro::getStickyNote('board_id', 'note_id');
 
-// Create — returns StickyNoteDto
-$note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
+// Create — returns StickyNoteResponse, ->dto() is StickyNoteDto
+$response = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
     content: 'Hello!',
     shape: 'square',          // square | rectangle
     fillColor: 'light_yellow',
@@ -88,8 +105,8 @@ $note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
     parentId: 'frame_id',     // optional, place inside a frame
 ));
 
-// Update — returns StickyNoteDto
-$note = Miro::updateStickyNote('board_id', 'note_id', new UpdateStickyNoteDto(
+// Update — returns StickyNoteResponse, ->dto() is StickyNoteDto
+$response = Miro::updateStickyNote('board_id', 'note_id', new UpdateStickyNoteDto(
     content: 'Updated',
     fillColor: 'light_pink',
 ));
@@ -125,15 +142,15 @@ use CodebarAg\Miro\Dto\Frames\GetFramesDto;
 use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
 use CodebarAg\Miro\Facades\Miro;
 
-// List — returns FrameDto[]
-$frames = Miro::getFrames('board_id');
-$frames = Miro::getFrames('board_id', new GetFramesDto(limit: 20));
+// List — returns FrameResponse, ->dto() is FrameDto[]
+$response = Miro::getFrames('board_id');
+$response = Miro::getFrames('board_id', new GetFramesDto(limit: 20));
 
-// Single — returns FrameDto
-$frame = Miro::getFrame('board_id', 'frame_id');
+// Single — returns FrameResponse, ->dto() is FrameDto
+$response = Miro::getFrame('board_id', 'frame_id');
 
-// Create — returns FrameDto
-$frame = Miro::createFrame('board_id', new CreateFrameDto(
+// Create — returns FrameResponse, ->dto() is FrameDto
+$response = Miro::createFrame('board_id', new CreateFrameDto(
     title: 'Sprint 1',
     positionX: 0.0,
     positionY: 0.0,
@@ -142,8 +159,8 @@ $frame = Miro::createFrame('board_id', new CreateFrameDto(
     fillColor: '#ffffff',
 ));
 
-// Update — returns FrameDto
-$frame = Miro::updateFrame('board_id', 'frame_id', new UpdateFrameDto(
+// Update — returns FrameResponse, ->dto() is FrameDto
+$response = Miro::updateFrame('board_id', 'frame_id', new UpdateFrameDto(
     title: 'Sprint 1 – Updated',
 ));
 
@@ -173,28 +190,45 @@ $frame->modifiedAt;  // ?string (ISO 8601)
 use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
 use CodebarAg\Miro\Facades\Miro;
 
-// List all items — returns BoardItemDto[]
-$items = Miro::getBoardItems('board_id');
-$items = Miro::getBoardItems('board_id', new GetBoardItemsDto(
+// List — returns BoardItemResponse, ->dto() is BoardItemDto[]
+$response = Miro::getBoardItems('board_id');
+$response = Miro::getBoardItems('board_id', new GetBoardItemsDto(
     type: 'sticky_note',
     limit: 50,
     cursor: 'next_page_cursor',
 ));
 
-// Single item by ID — returns BoardItemDto
-$item = Miro::getBoardItem('board_id', 'item_id');
+// Single — returns BoardItemResponse, ->dto() is BoardItemDto
+$response = Miro::getBoardItem('board_id', 'item_id');
+```
+
+### BoardItemDto properties
+
+```php
+$item->id;          // string
+$item->type;        // string (e.g. sticky_note, card, shape, text, frame)
+$item->data;        // ?array (type-specific content)
+$item->position;    // ?array (x, y, origin, relativeTo)
+$item->geometry;    // ?array (width, height, rotation)
+$item->createdAt;   // ?string (ISO 8601)
+$item->modifiedAt;  // ?string (ISO 8601)
+$item->parentId;    // ?string
 ```
 
 ## Using the connector directly
 
+Use the connector methods (not `->send()`) to get typed `*Response` objects:
+
 ```php
 use CodebarAg\Miro\MiroConnector;
-use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
 
 $connector = new MiroConnector();
 
-// ->dto() returns the typed DTO via createDtoFromResponse()
-$boards = $connector->send(new GetBoardsRequest())->dto();
+$response = $connector->getBoards();
+$boards = $response->dto(); // BoardDto[]
+
+$response = $connector->getBoard('board_id');
+$board = $response->dto(); // BoardDto
 ```
 
 ## Input DTOs reference

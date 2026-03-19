@@ -1,39 +1,52 @@
-# Laravel Miro
+<img src="https://banners.beyondco.de/Laravel%20Miro.png?theme=light&packageManager=composer+require&packageName=codebar-ag%2Flaravel-miro&pattern=circuitBoard&style=style_2&description=A+Laravel+Miro+integration.&md=1&showWatermark=0&fontSize=150px&images=template&widths=500&heights=500">
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/codebar-ag/laravel-miro.svg?style=flat-square)](https://packagist.org/packages/codebar-ag/laravel-miro)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/codebar-ag/laravel-miro/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/codebar-ag/laravel-miro/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/codebar-ag/laravel-miro.svg?style=flat-square)](https://packagist.org/packages/codebar-ag/laravel-miro)
+[![GitHub Tests](https://github.com/codebar-ag/laravel-miro/actions/workflows/run-tests-pest.yml/badge.svg?branch=main)](https://github.com/codebar-ag/laravel-miro/actions/workflows/run-tests-pest.yml)
+[![GitHub Code Style](https://github.com/codebar-ag/laravel-miro/actions/workflows/fix-php-code-style-issues-pint.yml/badge.svg?branch=main)](https://github.com/codebar-ag/laravel-miro/actions/workflows/fix-php-code-style-issues-pint.yml)
 
-A simple Laravel package for interacting with the [Miro REST API v2](https://developers.miro.com/reference/api-reference).
+This package was developed to give you a quick start to the Miro API.
 
-## Requirements
+## 📑 Table of Contents
 
-- PHP 8.2+
-- Laravel 10, 11, or 12
+- [What is Miro?](#-what-is-miro)
+- [Requirements](#-requirements)
+- [Installation](#️-installation)
+- [Laravel Boost Skill](#-laravel-boost-skill)
+- [Usage](#-usage)
+  - [Response Handling](#response-handling)
+  - [DTOs](#dtos)
+- [API Reference](#api-reference)
+  - [Boards](#boards)
+  - [Board Items](#board-items)
+  - [Sticky Notes](#sticky-notes)
+  - [Frames](#frames)
+- [Testing](#-testing)
+- [Changelog](#-changelog)
+- [Contributing](#️-contributing)
+- [Security Vulnerabilities](#️-security-vulnerabilities)
+- [Credits](#-credits)
+- [License](#-license)
 
-## Installation
+## 💡 What is Miro?
 
+Miro is an online collaborative whiteboard platform that enables teams to work effectively together, from brainstorming with digital sticky notes to planning and managing agile workflows.
 
-> **Not yet on Packagist!** Add the repository to your `composer.json` first:
-> clone the Project on your Pc and then link the path to it
->
-> ```json
-> "repositories": [
->     {
->         "type": "path",
->         "url": "/User/maxmustermann/projects/laravel-miro"
->     }
-> ]
-> ```
+## 🛠 Requirements
 
+| Package  | PHP           | Laravel       |
+|----------|---------------|---------------|
+| v0.1.1   | ^8.4          | ^12.0 \| ^13.0 |
 
-Install the package via Composer:
+## ⚙️ Installation
+
+You can install the package via composer:
 
 ```bash
 composer require codebar-ag/laravel-miro
 ```
 
-Publish the config file:
+Optionally, you can publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="laravel-miro-config"
@@ -42,12 +55,70 @@ php artisan vendor:publish --tag="laravel-miro-config"
 Add your Miro access token to your `.env` file:
 
 ```dotenv
-MIRO_ACCESS_TOKEN="your_token_here"
+MIRO_ACCESS_TOKEN=your_access_token_here
 ```
 
 You can generate a personal access token at [miro.com/app/settings/user-profile/apps](https://miro.com/app/settings/user-profile/apps).
 
-## Usage
+## 🤖 Laravel Boost Skill
+
+This package includes a [Laravel Boost](https://laravel.com/docs/boost) skill. If you use Laravel Boost in your project, the skill is automatically installed when you run:
+
+```bash
+php artisan boost:install
+```
+
+The skill provides AI agents with full context about the package — available methods, DTOs, response handling, and usage patterns.
+
+## 🚀 Usage
+
+All methods are available via the `Miro` facade and return a typed Response object.
+
+```php
+use CodebarAg\Miro\Facades\Miro;
+
+$response = Miro::getBoard('board_id');
+```
+
+### Response Handling
+
+All `*Response` objects expose the following methods:
+
+```php
+$response->successful();  // bool
+$response->failed();      // bool
+$response->status();      // int    (e.g. 200, 404, 429)
+$response->error();       // ?string — null on success
+$response->errorCode();   // ?string — null on success
+$response->dto();         // typed DTO or array of DTOs, null on failure
+```
+
+Check `successful()` before accessing the DTO — no try/catch needed for API errors like 404, 429, or 400.
+
+```php
+$response = Miro::getBoard('board_id');
+
+if ($response->successful()) {
+    $board = $response->dto(); // BoardDto
+} else {
+    $response->status();     // e.g. 404
+    $response->error();      // e.g. "Board not found"
+    $response->errorCode();  // e.g. "board_not_found"
+}
+```
+
+### DTOs
+
+We provide DTOs for the following:
+
+| DTO             | Fields                                                                                              |
+|-----------------|-----------------------------------------------------------------------------------------------------|
+| `BoardDto`      | `id`, `name`, `description`, `type`, `viewLink`, `teamId`, `projectId`, `createdAt`, `modifiedAt`  |
+| `BoardItemDto`  | `id`, `type`, `data`, `position`, `geometry`, `createdAt`, `modifiedAt`, `parentId`                |
+| `StickyNoteDto` | `id`, `type`, `content`, `shape`, `fillColor`, `textAlign`, `textAlignVertical`, `positionX`, `positionY`, `width`, `height`, `parentId`, `createdAt`, `modifiedAt` |
+| `FrameDto`      | `id`, `type`, `title`, `fillColor`, `positionX`, `positionY`, `width`, `height`, `parentId`, `createdAt`, `modifiedAt` |
+
+## API Reference
 
 ### Boards
 
@@ -56,235 +127,241 @@ use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\Dto\Boards\CreateBoardDto;
 use CodebarAg\Miro\Dto\Boards\GetBoardsDto;
 use CodebarAg\Miro\Dto\Boards\UpdateBoardDto;
+```
 
-// List all boards
-$boards = Miro::getBoards();
+```php
+/**
+ * Get All Boards
+ */
+$response = Miro::getBoards();
+$boards = $response->dto(); // BoardDto[]
+```
 
-// List boards with filters
-$boards = Miro::getBoards(new GetBoardsDto(
+```php
+/**
+ * Get Boards With Filters
+ */
+$response = Miro::getBoards(new GetBoardsDto(
     teamId: 'team_123',
     limit: 10,
 ));
+```
 
-// Get a specific board
-$board = Miro::getBoard('board_id');
+```php
+/**
+ * Get A Board
+ */
+$response = Miro::getBoard('board_id');
+$board = $response->dto(); // BoardDto
+```
 
-// Create a board
-$board = Miro::createBoard(new CreateBoardDto(
+```php
+/**
+ * Create A Board
+ */
+$response = Miro::createBoard(new CreateBoardDto(
     name: 'My Sprint Board',
     description: 'Q1 planning board',
 ));
+$board = $response->dto(); // BoardDto
+```
 
-// Update a board
-$board = Miro::updateBoard('board_id', new UpdateBoardDto(
+```php
+/**
+ * Update A Board
+ */
+$response = Miro::updateBoard('board_id', new UpdateBoardDto(
     name: 'Q1 Planning',
 ));
+$board = $response->dto(); // BoardDto
+```
 
-// Delete a board
-Miro::deleteBoard('board_id');
+```php
+/**
+ * Delete A Board
+ */
+Miro::deleteBoard('board_id'); // returns Saloon\Http\Response
 ```
 
 ### Board Items
 
 ```php
+use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\Dto\BoardItems\GetBoardItemsDto;
+```
 
-// Get all items on a board
-$items = Miro::getBoardItems('board_id');
+```php
+/**
+ * Get All Items On A Board
+ */
+$response = Miro::getBoardItems('board_id');
+$items = $response->dto(); // BoardItemDto[]
+```
 
-// Filter by item type
-$items = Miro::getBoardItems('board_id', new GetBoardItemsDto(
+```php
+/**
+ * Get Items Filtered By Type
+ */
+$response = Miro::getBoardItems('board_id', new GetBoardItemsDto(
     type: 'sticky_note',
 ));
+```
 
-// Get a single item by ID
-$item = Miro::getBoardItem('board_id', 'item_id');
+```php
+/**
+ * Get A Board Item
+ */
+$response = Miro::getBoardItem('board_id', 'item_id');
+$item = $response->dto(); // BoardItemDto
 ```
 
 ### Sticky Notes
 
 ```php
+use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\Dto\StickyNotes\CreateStickyNoteDto;
 use CodebarAg\Miro\Dto\StickyNotes\GetStickyNotesDto;
 use CodebarAg\Miro\Dto\StickyNotes\UpdateStickyNoteDto;
+```
 
-// Get all sticky notes on a board
-$notes = Miro::getStickyNotes('board_id');
+```php
+/**
+ * Get All Sticky Notes On A Board
+ */
+$response = Miro::getStickyNotes('board_id');
+$notes = $response->dto(); // StickyNoteDto[]
+```
 
-// Get a single sticky note
-$note = Miro::getStickyNote('board_id', 'item_id');
+```php
+/**
+ * Get A Sticky Note
+ */
+$response = Miro::getStickyNote('board_id', 'item_id');
+$note = $response->dto(); // StickyNoteDto
+```
 
-// Create a sticky note
-$note = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
+```php
+/**
+ * Create A Sticky Note
+ */
+$response = Miro::createStickyNote('board_id', new CreateStickyNoteDto(
     content: 'Hello World',
     shape: 'square',
     fillColor: 'yellow',
     positionX: 100.0,
     positionY: 200.0,
 ));
+$note = $response->dto(); // StickyNoteDto
+```
 
-// Update a sticky note
-$note = Miro::updateStickyNote('board_id', 'item_id', new UpdateStickyNoteDto(
+```php
+/**
+ * Update A Sticky Note
+ */
+$response = Miro::updateStickyNote('board_id', 'item_id', new UpdateStickyNoteDto(
     content: 'Updated content',
 ));
+$note = $response->dto(); // StickyNoteDto
+```
 
-// Delete a sticky note
-Miro::deleteStickyNote('board_id', 'item_id');
+```php
+/**
+ * Delete A Sticky Note
+ */
+Miro::deleteStickyNote('board_id', 'item_id'); // returns Saloon\Http\Response
 ```
 
 ### Frames
 
 ```php
+use CodebarAg\Miro\Facades\Miro;
 use CodebarAg\Miro\Dto\Frames\CreateFrameDto;
+use CodebarAg\Miro\Dto\Frames\GetFramesDto;
 use CodebarAg\Miro\Dto\Frames\UpdateFrameDto;
+```
 
-// Get all frames on a board
-$frames = Miro::getFrames('board_id');
+```php
+/**
+ * Get All Frames On A Board
+ */
+$response = Miro::getFrames('board_id');
+$frames = $response->dto(); // FrameDto[]
+```
 
-// Get a single frame
-$frame = Miro::getFrame('board_id', 'item_id');
+```php
+/**
+ * Get A Frame
+ */
+$response = Miro::getFrame('board_id', 'item_id');
+$frame = $response->dto(); // FrameDto
+```
 
-// Create a frame
-$frame = Miro::createFrame('board_id', new CreateFrameDto(
+```php
+/**
+ * Create A Frame
+ */
+$response = Miro::createFrame('board_id', new CreateFrameDto(
     title: 'Sprint 1',
     positionX: 0.0,
     positionY: 0.0,
     width: 1920.0,
     height: 1080.0,
 ));
+$frame = $response->dto(); // FrameDto
+```
 
-// Update a frame
-$frame = Miro::updateFrame('board_id', 'item_id', new UpdateFrameDto(
+```php
+/**
+ * Update A Frame
+ */
+$response = Miro::updateFrame('board_id', 'item_id', new UpdateFrameDto(
     title: 'Sprint 1 – Updated',
 ));
-
-// Delete a frame
-Miro::deleteFrame('board_id', 'item_id');
+$frame = $response->dto(); // FrameDto
 ```
-
-### Return Types
-
-All methods return typed DTOs:
-
-| Method | Return type |
-|--------|-------------|
-| `getBoards()` | `BoardDto[]` |
-| `getBoard()` | `BoardDto` |
-| `createBoard()` | `BoardDto` |
-| `updateBoard()` | `BoardDto` |
-| `deleteBoard()` | `Saloon\Http\Response` |
-| `getBoardItems()` | `BoardItemDto[]` |
-| `getBoardItem()` | `BoardItemDto` |
-| `getStickyNotes()` | `StickyNoteDto[]` |
-| `getStickyNote()` | `StickyNoteDto` |
-| `createStickyNote()` | `StickyNoteDto` |
-| `updateStickyNote()` | `StickyNoteDto` |
-| `deleteStickyNote()` | `Saloon\Http\Response` |
-| `getFrames()` | `FrameDto[]` |
-| `getFrame()` | `FrameDto` |
-| `createFrame()` | `FrameDto` |
-| `updateFrame()` | `FrameDto` |
-| `deleteFrame()` | `Saloon\Http\Response` |
-
-#### BoardDto
 
 ```php
-$board->id;           // string
-$board->name;         // string
-$board->description;  // ?string
-$board->type;         // string
-$board->viewLink;     // string  (direct URL to open the board)
-$board->teamId;       // ?string
-$board->projectId;    // ?string
-$board->createdAt;    // ?string (ISO 8601)
-$board->modifiedAt;   // ?string (ISO 8601)
+/**
+ * Delete A Frame
+ */
+Miro::deleteFrame('board_id', 'item_id'); // returns Saloon\Http\Response
 ```
 
-#### BoardItemDto
-
-```php
-$item->id;          // string
-$item->type;        // string (e.g. sticky_note, card, shape, text, frame, ...)
-$item->data;        // ?array (type-specific content)
-$item->position;    // ?array (x, y, origin, relativeTo)
-$item->geometry;    // ?array (width, height, rotation)
-$item->createdAt;   // ?string
-$item->modifiedAt;  // ?string
-$item->parentId;    // ?string
-```
-
-#### StickyNoteDto
-
-```php
-$note->id;                 // string
-$note->type;               // string
-$note->content;            // ?string
-$note->shape;              // ?string
-$note->fillColor;          // ?string
-$note->textAlign;          // ?string
-$note->textAlignVertical;  // ?string
-$note->positionX;          // ?float
-$note->positionY;          // ?float
-$note->width;              // ?float
-$note->height;             // ?float
-$note->parentId;           // ?string
-$note->createdAt;          // ?string (ISO 8601)
-$note->modifiedAt;         // ?string (ISO 8601)
-```
-
-#### FrameDto
-
-```php
-$frame->id;          // string
-$frame->type;        // string
-$frame->title;       // ?string
-$frame->fillColor;   // ?string
-$frame->positionX;   // ?float
-$frame->positionY;   // ?float
-$frame->width;       // ?float
-$frame->height;      // ?float
-$frame->parentId;    // ?string
-$frame->createdAt;   // ?string (ISO 8601)
-$frame->modifiedAt;  // ?string (ISO 8601)
-```
-
-### Using the connector directly
-
-If you need more control you can use the connector directly instead of the facade:
-
-```php
-use CodebarAg\Miro\MiroConnector;
-use CodebarAg\Miro\Requests\Boards\GetBoardsRequest;
-
-$connector = new MiroConnector();
-$response  = $connector->send(new GetBoardsRequest(['limit' => 5]));
-
-$data = $response->json();
-```
-
-## Testing
+## 🧪 Testing
 
 ```bash
 composer test
 ```
 
-## Changelog
+To run the live API tests against the real Miro API, set your token as an environment variable:
+```env
+MIRO_ACCESS_TOKEN=your_access_token_here 
+```
+
+
+```bash
+vendor/bin/pest --group=live
+```
+
+Alternatively, add it to `.env.testing` in the project root.
+
+## 📝 Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
+## ⚒️ Contributing
 
 Please see [CONTRIBUTING](https://github.com/codebar-ag/.github/blob/main/CONTRIBUTING.md) for details.
 
-## Security Vulnerabilities
+## 🔒️ Security Vulnerabilities
 
 Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
 
-## Credits
+## 🙏 Credits
 
 - [codebar AG](https://github.com/codebar-ag)
 - [All Contributors](../../contributors)
 
-## License
+## 📄 License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
