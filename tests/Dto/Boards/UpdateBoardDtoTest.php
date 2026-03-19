@@ -16,5 +16,5 @@ it('omits null fields', function () {
 });
 
 it('returns empty array when all fields are null', function () {
-    expect((new UpdateBoardDto())->toArray())->toBe([]);
+    expect((new UpdateBoardDto)->toArray())->toBe([]);
 });

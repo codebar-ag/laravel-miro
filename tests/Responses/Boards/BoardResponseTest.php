@@ -9,7 +9,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('fromResponse returns a BoardDto on success', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient(new MockClient([
         GetBoardRequest::class => MockResponse::make([
             'id' => 'uXjVKGmRXTo=',
@@ -28,7 +28,7 @@ it('fromResponse returns a BoardDto on success', function () {
 });
 
 it('collectionFromResponse returns an array of BoardDto on success', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient(new MockClient([
         GetBoardsRequest::class => MockResponse::make([
             'data' => [
@@ -38,7 +38,7 @@ it('collectionFromResponse returns an array of BoardDto on success', function ()
         ], 200),
     ]));
 
-    $response = BoardResponse::collectionFromResponse($connector->send(new GetBoardsRequest()));
+    $response = BoardResponse::collectionFromResponse($connector->send(new GetBoardsRequest));
 
     expect($response->successful())->toBeTrue()
         ->and($response->dto())->toBeArray()->toHaveCount(2)
@@ -48,7 +48,7 @@ it('collectionFromResponse returns an array of BoardDto on success', function ()
 });
 
 it('fromResponse returns null dto on failure', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient(new MockClient([
         GetBoardRequest::class => MockResponse::make([
             'status' => 404,
@@ -69,7 +69,7 @@ it('fromResponse returns null dto on failure', function () {
 });
 
 it('error and errorCode return null on success', function () {
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $connector->withMockClient(new MockClient([
         GetBoardRequest::class => MockResponse::make([
             'id' => 'uXjVKGmRXTo=', 'name' => 'Test Board', 'type' => 'board', 'viewLink' => '',

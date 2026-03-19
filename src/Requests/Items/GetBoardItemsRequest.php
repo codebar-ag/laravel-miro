@@ -13,8 +13,7 @@ class GetBoardItemsRequest extends Request
     public function __construct(
         protected string $boardId,
         protected array $params = []
-    ) {
-    }
+    ) {}
 
     public function resolveEndpoint(): string
     {

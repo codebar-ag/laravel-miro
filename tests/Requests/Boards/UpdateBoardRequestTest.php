@@ -21,7 +21,7 @@ it('can perform the request', function () {
         UpdateBoardRequest::class => MockResponse::fixture('Boards/update-board'),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $response = $connector->send(
         new UpdateBoardRequest('uXjVKGmRXTo=', (new UpdateBoardDto(name: 'Renamed Board'))->toArray())
     );

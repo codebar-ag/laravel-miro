@@ -30,7 +30,7 @@ it('can perform the request', function () {
         GetStickyNotesRequest::class => MockResponse::fixture('StickyNotes/get-sticky-notes'),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $response = $connector->send(new GetStickyNotesRequest('uXjVKGmRXTo='));
 
     Saloon::assertSent(GetStickyNotesRequest::class);
