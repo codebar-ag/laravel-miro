@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\StickyNotes;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
@@ -16,6 +17,6 @@ class GetStickyNoteRequest extends Request
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/sticky_notes/{$this->itemId}";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/sticky_notes/'.PathSegment::encode($this->itemId);
     }
 }

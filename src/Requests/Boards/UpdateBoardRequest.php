@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Boards;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -21,7 +22,7 @@ class UpdateBoardRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}";
+        return '/v2/boards/'.PathSegment::encode($this->boardId);
     }
 
     /** @return array<string, mixed> */

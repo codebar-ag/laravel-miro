@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Items;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
@@ -17,7 +18,7 @@ class GetBoardItemsRequest extends Request
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/items";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/items';
     }
 
     /** @return array<string, mixed> */

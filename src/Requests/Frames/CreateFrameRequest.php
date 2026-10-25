@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Frames;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -21,7 +22,7 @@ class CreateFrameRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/frames";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/frames';
     }
 
     /** @return array<string, mixed> */
