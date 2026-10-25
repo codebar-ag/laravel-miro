@@ -21,7 +21,7 @@ it('can perform the request', function () {
         CreateFrameRequest::class => MockResponse::fixture('Frames/create-frame'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(
         new CreateFrameRequest('uXjVKGmRXTo=', (new CreateFrameDto(
             title: 'New Frame',

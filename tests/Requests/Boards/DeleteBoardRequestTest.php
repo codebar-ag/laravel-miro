@@ -20,7 +20,7 @@ it('can perform the request', function () {
         DeleteBoardRequest::class => MockResponse::fixture('Boards/delete-board'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new DeleteBoardRequest('uXjVKGmRXTo='));
 
     Saloon::assertSent(DeleteBoardRequest::class);

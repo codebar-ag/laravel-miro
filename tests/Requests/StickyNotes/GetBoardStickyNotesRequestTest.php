@@ -24,7 +24,7 @@ it('can perform the request', function () {
         GetBoardStickyNotesRequest::class => MockResponse::fixture('StickyNotes/get-board-sticky-notes'),
     ]);
 
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $response = $connector->send(new GetBoardStickyNotesRequest('uXjVKGmRXTo='));
 
     Saloon::assertSent(GetBoardStickyNotesRequest::class);

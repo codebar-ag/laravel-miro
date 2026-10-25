@@ -10,7 +10,7 @@ use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
 it('fromResponse returns a StickyNoteDto on success', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         GetStickyNoteRequest::class => MockResponse::make([
             'id' => '3458764591589797401',
@@ -38,7 +38,7 @@ it('fromResponse returns a StickyNoteDto on success', function () {
 });
 
 it('collectionFromResponse returns an array of StickyNoteDto on success', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         GetStickyNotesRequest::class => MockResponse::make([
             'data' => [
@@ -72,7 +72,7 @@ it('collectionFromResponse returns an array of StickyNoteDto on success', functi
 });
 
 it('fromResponse returns null dto on failure', function () {
-    $connector = new MiroConnector;
+    $connector = new MiroConnector();
     $connector->withMockClient(new MockClient([
         CreateStickyNoteRequest::class => MockResponse::make([
             'status' => 400,

@@ -32,5 +32,5 @@ it('omits null nested sections entirely', function () {
 });
 
 it('returns empty array when all fields are null', function () {
-    expect((new CreateStickyNoteDto)->toArray())->toBe([]);
+    expect((new CreateStickyNoteDto())->toArray())->toBe([]);
 });

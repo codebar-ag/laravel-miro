@@ -8,7 +8,8 @@ class GetBoardItemsDto
         public ?int $limit = null,
         public ?string $cursor = null,
         public ?string $type = null,
-    ) {}
+    ) {
+    }
 
     /** @return array<string, mixed> */
     public function toArray(): array
