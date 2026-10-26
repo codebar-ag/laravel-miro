@@ -7,15 +7,15 @@ use Saloon\Http\Faking\MockResponse;
 use Saloon\Laravel\Saloon;
 
 it('resolves the correct endpoint', function () {
-    expect((new GetBoardsRequest())->resolveEndpoint())->toBe('/v2/boards');
+    expect((new GetBoardsRequest)->resolveEndpoint())->toBe('/v2/boards');
 });
 
 it('uses the GET method', function () {
-    expect((new GetBoardsRequest())->getMethod())->toBe(Method::GET);
+    expect((new GetBoardsRequest)->getMethod())->toBe(Method::GET);
 });
 
 it('sends empty query params by default', function () {
-    expect((new GetBoardsRequest())->query()->all())->toBe([]);
+    expect((new GetBoardsRequest)->query()->all())->toBe([]);
 });
 
 it('forwards query params from constructor', function () {
@@ -28,8 +28,8 @@ it('can perform the request', function () {
         GetBoardsRequest::class => MockResponse::fixture('Boards/get-boards'),
     ]);
 
-    $connector = new MiroConnector();
-    $response = $connector->send(new GetBoardsRequest());
+    $connector = new MiroConnector;
+    $response = $connector->send(new GetBoardsRequest);
 
     Saloon::assertSent(GetBoardsRequest::class);
 

@@ -14,5 +14,5 @@ it('omits null fields', function () {
 });
 
 it('returns empty array when all fields are null', function () {
-    expect((new GetFramesDto())->toArray())->toBe([]);
+    expect((new GetFramesDto)->toArray())->toBe([]);
 });

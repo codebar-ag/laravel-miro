@@ -29,5 +29,5 @@ it('omits null nested sections entirely', function () {
 });
 
 it('returns empty array when all fields are null', function () {
-    expect((new UpdateFrameDto())->toArray())->toBe([]);
+    expect((new UpdateFrameDto)->toArray())->toBe([]);
 });

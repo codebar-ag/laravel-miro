@@ -16,8 +16,7 @@ class BoardDto
         public ?string $projectId,
         public ?string $createdAt,
         public ?string $modifiedAt,
-    ) {
-    }
+    ) {}
 
     /** @param array<string, mixed> $data */
     public static function fromResponse(array $data): self

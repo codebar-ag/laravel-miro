@@ -19,8 +19,7 @@ class UpdateFrameRequest extends Request implements HasBody
         protected string $boardId,
         protected string $itemId,
         protected array $data
-    ) {
-    }
+    ) {}
 
     public function resolveEndpoint(): string
     {
