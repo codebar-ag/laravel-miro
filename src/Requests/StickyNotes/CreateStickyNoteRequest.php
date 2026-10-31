@@ -18,8 +18,7 @@ class CreateStickyNoteRequest extends Request implements HasBody
     public function __construct(
         protected string $boardId,
         protected array $data
-    ) {
-    }
+    ) {}
 
     public function resolveEndpoint(): string
     {

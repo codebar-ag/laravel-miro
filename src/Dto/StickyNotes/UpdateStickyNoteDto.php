@@ -17,8 +17,7 @@ class UpdateStickyNoteDto
         public readonly ?string $positionOrigin = null,
         public readonly ?float $width = null,
         public readonly ?string $parentId = null,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function toArray(): array

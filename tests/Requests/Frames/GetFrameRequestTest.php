@@ -20,7 +20,7 @@ it('can perform the request', function () {
         GetFrameRequest::class => MockResponse::fixture('Frames/get-frame'),
     ]);
 
-    $connector = new MiroConnector();
+    $connector = new MiroConnector;
     $response = $connector->send(new GetFrameRequest('uXjVKGmRXTo=', '3458764591589797501'));
 
     Saloon::assertSent(GetFrameRequest::class);
