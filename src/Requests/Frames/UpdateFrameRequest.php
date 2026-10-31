@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Frames;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -22,7 +23,7 @@ class UpdateFrameRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/frames/{$this->itemId}";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/frames/'.PathSegment::encode($this->itemId);
     }
 
     /** @return array<string, mixed> */

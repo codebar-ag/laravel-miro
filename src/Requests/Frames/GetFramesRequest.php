@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\Frames;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
@@ -17,7 +18,7 @@ class GetFramesRequest extends Request
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/frames";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/frames';
     }
 
     /** @return array<string, mixed> */

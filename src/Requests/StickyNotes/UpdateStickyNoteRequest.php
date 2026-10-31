@@ -2,6 +2,7 @@
 
 namespace CodebarAg\Miro\Requests\StickyNotes;
 
+use CodebarAg\Miro\Support\PathSegment;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -22,7 +23,7 @@ class UpdateStickyNoteRequest extends Request implements HasBody
 
     public function resolveEndpoint(): string
     {
-        return "/v2/boards/{$this->boardId}/sticky_notes/{$this->itemId}";
+        return '/v2/boards/'.PathSegment::encode($this->boardId).'/sticky_notes/'.PathSegment::encode($this->itemId);
     }
 
     /** @return array<string, mixed> */
