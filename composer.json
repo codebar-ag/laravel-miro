@@ -46,7 +46,9 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
-        "lint": "vendor/bin/pint"
+        "lint": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse",
+        "format": "vendor/bin/pint"
     },
     "config": {
         "sort-packages": true,
