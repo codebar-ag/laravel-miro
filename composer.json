@@ -45,10 +45,11 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest",
+        "test": "vendor/bin/pest --no-coverage --exclude-group=live",
         "lint": "vendor/bin/pint",
         "analyse": "vendor/bin/phpstan analyse",
-        "format": "vendor/bin/pint"
+        "format": "vendor/bin/pint",
+        "test:live": "vendor/bin/pest --no-coverage --group=live"
     },
     "config": {
         "sort-packages": true,
